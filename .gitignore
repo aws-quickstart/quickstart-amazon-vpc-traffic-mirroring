@@ -1,6 +1,5 @@
 .DS_Store
 taskcat_outputs/*
-.taskcat/*
 .taskcat_overrides.yml
 packages/
 .ropeproject
