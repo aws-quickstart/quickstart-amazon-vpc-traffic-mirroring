@@ -286,7 +286,7 @@ Parameters:
     ConstraintDescription: The Quick Start bucket name can include numbers, lowercase
       letters, uppercase letters, and hyphens (-). It cannot start or end with a 
       hyphen (-).
-    Default: prm-quickstart-test
+    Default: aws-quickstart
     Description: Name of the S3 bucket for your copy of the Quick Start assets. 
       Keep the default name unless you are customizing the template. 
       Changing the name updates code references to point to a new Quick 
@@ -298,7 +298,7 @@ Parameters:
     AllowedPattern: ^([0-9a-zA-Z-.]+/)*$
     ConstraintDescription: The Quick Start S3 key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/).
-    Default: quickstart-vpc-traffic-mirroring/
+    Default: quickstart-amazon-vpc-traffic-mirroring/
     Description: S3 key prefix that is used to simulate a directory for your copy of the 
       Quick Start assets. Keep the default prefix unless you are customizing 
       the template. Changing this prefix updates code references to point to 
@@ -377,7 +377,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target.template
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
       Parameters:
@@ -393,9 +393,6 @@ Resources:
         TargetInstanceRootVolumeSize: !Ref TargetInstanceRootVolumeSize
         KeyPairName: !Ref KeyPairName
         BastionSecurityGroupID: !GetAtt [BastionStack, Outputs.BastionSecurityGroupID]
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3KeyPrefix: !Ref QSS3KeyPrefix
 
 Outputs:
   Postdeployment:
