@@ -3,21 +3,24 @@ project:
   owner: pmankad@amazon.com
   package_lambda: false
   s3_regional_buckets: true
+  shorten_stack_name: true
   regions:
   - us-west-2
-  template: templates/vpc-traffic-mirroring-primary-test.yaml
+  template: templates/vpc-traffic-mirroring-primary.template.yaml
   parameters:
     StackName: VpcTmTestStack
     AvailabilityZones: $[taskcat_getaz_2]
     BastionInstanceType: t3.medium
-    KeyPairName: k8sAdmin
+    KeyPairName: $[taskcat_getkeypair]
     PrivateSubnet1CIDR: 10.0.0.0/19
     PrivateSubnet2CIDR: 10.0.32.0/19
     PublicSubnet1CIDR: 10.0.128.0/20
     PublicSubnet2CIDR: 10.0.144.0/20
     RemoteAccessCIDR: 10.0.0.0/16
     VPCCIDR: 10.0.0.0/16
+    QSS3KeyPrefix: quickstart-amazon-vpc-traffic-mirroring/
     QSS3BucketRegion: $[taskcat_current_region]
+    QSS3BucketName: $[taskcat_autobucket]
 tests:
   tm-targets:
     parameters:
