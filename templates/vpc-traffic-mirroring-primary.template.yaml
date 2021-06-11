@@ -40,9 +40,9 @@ Metadata:
           - NLBName
           - NLBScheme
           - TargetGroupName
-          - NumTargets
-          - TargetInstanceType
-          - TargetInstanceRootVolumeSize
+          - NumTargetEC2Instances
+          - TargetEC2InstanceType
+          - TargetEC2InstanceRootVolumeSize
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -80,12 +80,12 @@ Metadata:
         default: Network Load Balancer scheme
       TargetGroupName:
         default: Target Group name
-      NumTargets:
-        default: Number of targets
-      TargetInstanceType:
-        default: Target instance type
-      TargetInstanceRootVolumeSize:
-        default: Target instance disk size
+      NumTargetEC2Instances:
+        default: Number of target EC2 instances
+      TargetEC2InstanceType:
+        default: Target EC2 instance type
+      TargetEC2InstanceRootVolumeSize:
+        default: Target EC2 instance disk size
       PrivateSubnet1CIDR:
         default: Private subnet 1 CIDR
       PrivateSubnet2CIDR:
@@ -235,16 +235,16 @@ Parameters:
     Type: String
     Default: traffic-mirror-nlb1-tg1
     ConstraintDescription: Must be a valid target group name
-  NumTargets:
+  NumTargetEC2Instances:
     AllowedValues:
       - '1'
       - '2'
       - '3'
       - '4'
-    Default: '1'
+    Default: '2'
     Description: The number of targets to create. The maximum number is four.
     Type: String                
-  TargetInstanceType:
+  TargetEC2InstanceType:
     Description: Amazon EC2 instance type for the target instances associated with NLB.
     Type: String
     Default: c5n.large
@@ -271,7 +271,7 @@ Parameters:
       - c5n.4xlarge
       - c5n.9xlarge
       - c5n.18xlarge
-  TargetInstanceRootVolumeSize:
+  TargetEC2InstanceRootVolumeSize:
     Description: Target instance disk size in GB. Default is set to 8GB
     Default: 8
     Type: Number
@@ -347,6 +347,7 @@ Resources:
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
         VPCCIDR: !Ref VPCCIDR
         VPCTenancy: !Ref VPCTenancy
+
   BastionStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -373,11 +374,11 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         RemoteAccessCIDR: !Ref RemoteAccessCIDR
 
-  TrafficMirrorTargetStack:
+  TrafficMirrorNLBStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target-nlb.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
       Parameters:
@@ -385,14 +386,27 @@ Resources:
         NLBScheme: !Ref NLBScheme
         NLBSubnet1ID: !GetAtt [VPCStack, Outputs.PrivateSubnet1AID]
         NLBSubnet2ID: !GetAtt [VPCStack, Outputs.PrivateSubnet2AID]
-        VPCID: !GetAtt [VPCStack, Outputs.VPCID]
-        VPCCIDR: !GetAtt [VPCStack, Outputs.VPCCIDR]        
+        VPCID: !GetAtt [VPCStack, Outputs.VPCID]     
         TargetGroupName: !Ref TargetGroupName
-        NumTargets: !Ref NumTargets
-        TargetInstanceType: !Ref TargetInstanceType
-        TargetInstanceRootVolumeSize: !Ref TargetInstanceRootVolumeSize
+
+  TrafficMirrorTargetInstanceStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target-instance.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+      Parameters:
+        VPCID: !GetAtt [VPCStack, Outputs.VPCID]
+        VPCCIDR: !GetAtt [VPCStack, Outputs.VPCCIDR]       
+        Subnet1ID: !GetAtt [VPCStack, Outputs.PrivateSubnet1AID]
+        Subnet2ID: !GetAtt [VPCStack, Outputs.PrivateSubnet2AID]
+        NumTargetEC2Instances: !Ref NumTargetEC2Instances
+        TargetEC2InstanceType: !Ref TargetEC2InstanceType
+        TargetEC2InstanceRootVolumeSize: !Ref TargetEC2InstanceRootVolumeSize
         KeyPairName: !Ref KeyPairName
         BastionSecurityGroupID: !GetAtt [BastionStack, Outputs.BastionSecurityGroupID]
+        TargetGroupARN: !GetAtt [TrafficMirrorNLBStack, Outputs.TargeGroupARN]
 
 Outputs:
   Postdeployment:

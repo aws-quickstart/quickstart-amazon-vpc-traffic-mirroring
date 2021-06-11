@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: VPC Traffic Mirroring Target
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: 'Network Load Balancer Configuration'
+        Parameters:
+          - NLBName
+          - NLBScheme
+          - NLBSubnet1ID
+          - NLBSubnet2ID
+      - Label:
+          default: 'Target Group Configuration'
+        Parameters:
+          - VPCID
+          - TargetGroupName
+    ParameterLabels:
+      VPCID:
+        default: VPC ID  
+      NLBName:
+        default: Network Load Balancer Name
+      NLBScheme:
+        default: Network Load Balancer Scheme
+      NLBSubnet1ID:
+        default: ID of Subnet 1 to be associated with NLB
+      NLBSubnet2ID:
+        default: ID of Subnet 2 to be associated with NLB        
+      TargetGroupName:
+        default: Target Group Name
+
+Parameters:
+  VPCID:
+    Description: ID of the VPC (e.g., vpc-0343606e).
+    Type: 'AWS::EC2::VPC::Id'
+  NLBName:
+    Description: >-
+      Network Load balancer name. This name must be unique within your AWS 
+      account and can have a maximum of 32 alphanumeric characters and 
+      hyphens. A name cannot begin or end with a hyphen.
+    Type: String
+    Default: tm-target-nlb1
+    ConstraintDescription: Must be a valid ELB Name
+  NLBScheme:
+    Description: >-
+      Network Load Balancer scheme. Valid values are internet-facing and 
+      internal. The default is internal
+    Default: internal
+    AllowedValues: ['internet-facing', 'internal']
+    Type: String
+    ConstraintDescription: 'Must be a valid ELB scheme'
+  NLBSubnet1ID:
+    Description: ID of Subnet 1 to be associated with NLB (e.g., subnet-11223344, subnet-55667788).
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Must be a valid subnet ID
+  NLBSubnet2ID:
+    Description: ID of Subnet 2 to be associated with NLB (e.g., subnet-11223344, subnet-55667788).
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Must be a valid subnet ID    
+  TargetGroupName:
+    Description: Target Group Name
+    Type: String
+    Default: tm-targets-tg1
+    ConstraintDescription: Must be a valid target group name
+
+Resources:
+  Nlb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Ref NLBName
+      Scheme: !Ref NLBScheme
+      Type: network
+      Subnets: 
+        - !Ref NLBSubnet1ID
+        - !Ref NLBSubnet2ID
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-nlb-1"
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Ref TargetGroupName
+      Port: 4789
+      Protocol: UDP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      VpcId: !Ref VPCID
+      HealthCheckPort: '80'
+      HealthCheckProtocol: HTTP 
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-nlb1-tg1"
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Port: 4789
+      Protocol: UDP
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref Nlb
+
+Outputs:
+  NetworkLoadBalancerARN:
+    Description: Network Load Balancer ARN
+    Value: !Ref Nlb
+  TargeGroupARN:
+    Description: Target Group ARN
+    Value: !Ref TargetGroup
