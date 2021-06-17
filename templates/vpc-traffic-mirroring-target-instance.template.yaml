@@ -1,12 +1,41 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: VPC Traffic Mirroring Target Instance
+Description: VPC Traffic Mirroring target instance template. (qs-1s0om7h6b)
 
 Metadata:
+  QSLint:
+    Exclusions: [W9901]
+  LintSpellExclude:
+    - Linux
+    - Amazon
+    - VPC
+    - Traffic Mirroring
+    - Network Load Balancer
+    - CIDR
+    - DMZ
+    - GB
+    - Region
+    - S3
+    - AmazonS3
+    - QSS3BucketName
+    - Quick Start
+    - SSH
+    - customizing
+    - ID
+    - VPCID
+    - vpc
+    - EC2
+    - ARN
+    - Subnet
+    - Suricata
+    - NLB
+    - Interface
+    - c5n.large
+    - TrafficMirrorTargetType
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: 'Traffic Mirror Target Instance Configuration:'
+          default: 'Traffic Mirroring target instance configuration'
         Parameters:
           - VPCID
           - VPCCIDR
@@ -17,40 +46,41 @@ Metadata:
           - TargetEC2InstanceRootVolumeSize
           - KeyPairName
           - BastionSecurityGroupID
-      - Label:
-          default: 'Others:'
-        Parameters:
           - TrafficMirrorTargetType
           - TargetGroupARN
+          - LatestAmazonLinux2AmiId
+
     ParameterLabels:
       VPCCIDR:
-        default: VPC CIDR Block
+        default: VPC CIDR block
       VPCID:
         default: VPC ID      
       Subnet1ID:
-        default: Subnet1 ID in AZ1
+        default: Subnet 1 ID
       Subnet2ID:
-        default: Subnet2 ID in AZ2
+        default: Subnet 2 ID
       NumTargetEC2Instances:
         default: The number of target instances to create. The maximum number is four.     
       TargetEC2InstanceType:
-        default: Target EC2 instance Type
+        default: Target EC2 instance type
       TargetEC2InstanceRootVolumeSize:
         default: Target EC2 instance size in GB
       KeyPairName:
-        default: KeyPair required for accessing target EC2 instance
+        default: Key pair required for accessing target EC2 instance
       BastionSecurityGroupID:
         default: Bastion security group ID
       TrafficMirrorTargetType:
         default: Traffic mirror target type
       TargetGroupARN:
-        default: Target Group ARN       
+        default: Target group ARN
+      LatestAmazonLinux2AmiId:
+        default: Amazon Linux 2 AMI ID
 
 Parameters:
   VPCCIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
     Default: 10.0.0.0/24
-    Description: VPC - CIDR block for the VPC
+    Description: CIDR block for the VPC.
     Type: String
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
   VPCID:
@@ -73,7 +103,7 @@ Parameters:
     Description: The number of targets to create. The maximum number is four.
     Type: String        
   TargetEC2InstanceType:
-    Description: Select EC2 instance type for suricata target EC2 instance. Default is set to c5n.large
+    Description: Select EC2 instance type for Suricata target EC2 instance. Default is set to c5n.large.
     Type: String
     Default: c5n.large
     AllowedValues:
@@ -100,30 +130,31 @@ Parameters:
       - c5n.9xlarge
       - c5n.18xlarge
   TargetEC2InstanceRootVolumeSize:
-    Description: Target instance disk size in GB. Default is set to 8GB
+    Description: Target instance disk size in GB. Default is set to 8GB.
     Default: 8
     AllowedValues: [8]
     Type: Number
     ConstraintDescription: Should be a valid instance size in GB
   KeyPairName:
-    Description: EC2 KeyPair required for accessing EC2 instance
+    Description: EC2 key pair required for accessing EC2 instance.
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: Must be the name of an existing EC2 KeyPair
   LatestAmazonLinux2AmiId:
+    Description: Latest Amazon Linux 2 AMI ID.
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'  
   BastionSecurityGroupID:
-    Description: ID of Bastion Security Group to allow access to targets
+    Description: ID of bastion security group to allow access to targets.
     Type: 'AWS::EC2::SecurityGroup::Id'
     ConstraintDescription: Must be a valid security group ID
   TrafficMirrorTargetType:
-    Description: 'Traffic mirror target type: NLB or Interface'
+    Description: 'Traffic mirror target type: NLB or Interface.'
     Type: String
     Default: NLB
     AllowedValues: ['NLB', 'Interface']
     ConstraintDescription: Must be a valid traffic mirror target type    
   TargetGroupARN:
-    Description: Target Group ARN. Not required if TrafficMirrorTargetType is not NLB.
+    Description: Target group ARN. Not required if TrafficMirrorTargetType is not NLB.
     Type: String
     ConstraintDescription: Must be a valid target group ARN
 

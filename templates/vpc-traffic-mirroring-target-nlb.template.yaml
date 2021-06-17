@@ -1,8 +1,29 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: VPC Traffic Mirroring Target
+Description: VPC Traffic Mirroring target template. (qs-1s0om7h6j)
 
 Metadata:
+  QSLint:
+    Exclusions: [W9901]
+  LintSpellExclude:
+    - Linux
+    - Amazon
+    - VPC
+    - Traffic Mirroring
+    - Network Load Balancer
+    - CIDR
+    - DMZ
+    - GB
+    - Region
+    - S3
+    - AmazonS3
+    - QSS3BucketName
+    - Quick Start
+    - SSH
+    - customizing
+    - ID
+    - VPCID
+    - vpc
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -13,7 +34,7 @@ Metadata:
           - NLBSubnet1ID
           - NLBSubnet2ID
       - Label:
-          default: 'Target Group Configuration'
+          default: 'Target group configuration'
         Parameters:
           - VPCID
           - TargetGroupName
@@ -29,7 +50,7 @@ Metadata:
       NLBSubnet2ID:
         default: ID of Subnet 2 to be associated with NLB        
       TargetGroupName:
-        default: Target Group Name
+        default: Target group name
 
 Parameters:
   VPCID:
@@ -37,7 +58,7 @@ Parameters:
     Type: 'AWS::EC2::VPC::Id'
   NLBName:
     Description: >-
-      Network Load balancer name. This name must be unique within your AWS 
+      Network Load Balancer name. This name must be unique within your AWS
       account and can have a maximum of 32 alphanumeric characters and 
       hyphens. A name cannot begin or end with a hyphen.
     Type: String
@@ -46,7 +67,7 @@ Parameters:
   NLBScheme:
     Description: >-
       Network Load Balancer scheme. Valid values are internet-facing and 
-      internal. The default is internal
+      internal. The default is internal.
     Default: internal
     AllowedValues: ['internet-facing', 'internal']
     Type: String
@@ -60,7 +81,7 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
     ConstraintDescription: Must be a valid subnet ID    
   TargetGroupName:
-    Description: Target Group Name
+    Description: Target group name.
     Type: String
     Default: tm-targets-tg1
     ConstraintDescription: Must be a valid target group name
