@@ -1,6 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: VPC Traffic Mirroring target instance template. (qs-1s0om7h6b)
+Description: >- 
+  VPC Traffic Mirroring instance template. Template creates Amazon Linux 2
+  EC2 instance(s) with Suricata installed on it. Instances are launched in auto
+  scaling group. If traffic mirror target type is set to NLB, template
+  associates auto scaling group with a target group. Template can also be
+  launched as a stand alone template (qs-1s0om7h6b).
 
 Metadata:
   QSLint:
@@ -29,7 +34,7 @@ Metadata:
     - Subnet
     - Suricata
     - NLB
-    - Interface
+    - ENI
     - c5n.large
     - TrafficMirrorTargetType
   AWS::CloudFormation::Interface:
@@ -85,7 +90,8 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
   VPCID:
     Description: ID of the VPC (e.g., vpc-0343606e).
-    Type: 'AWS::EC2::VPC::Id'
+    Type: AWS::EC2::VPC::Id
+    ConstraintDescription: Must be a valid VPC ID
   Subnet1ID:
     Description: ID of Subnet 1 to be associated (e.g., subnet-11223344, subnet-55667788).
     Type: AWS::EC2::Subnet::Id
@@ -132,7 +138,6 @@ Parameters:
   TargetEC2InstanceRootVolumeSize:
     Description: Target instance disk size in GB. Default is set to 8GB.
     Default: 8
-    AllowedValues: [8]
     Type: Number
     ConstraintDescription: Should be a valid instance size in GB
   KeyPairName:
@@ -142,20 +147,21 @@ Parameters:
   LatestAmazonLinux2AmiId:
     Description: Latest Amazon Linux 2 AMI ID.
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'  
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
   BastionSecurityGroupID:
     Description: ID of bastion security group to allow access to targets.
-    Type: 'AWS::EC2::SecurityGroup::Id'
+    Type: AWS::EC2::SecurityGroup::Id
     ConstraintDescription: Must be a valid security group ID
   TrafficMirrorTargetType:
-    Description: 'Traffic mirror target type: NLB or Interface.'
+    Description: 'Traffic mirror target type: NLB or ENI.'
     Type: String
     Default: NLB
-    AllowedValues: ['NLB', 'Interface']
+    AllowedValues: ['NLB', 'ENI']
     ConstraintDescription: Must be a valid traffic mirror target type    
   TargetGroupARN:
     Description: Target group ARN. Not required if TrafficMirrorTargetType is not NLB.
     Type: String
+    Default: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-targets/73e2d6bc24d8a067'
     ConstraintDescription: Must be a valid target group ARN
 
 Conditions:
@@ -280,12 +286,9 @@ Resources:
           systemctl enable httpd
           systemctl start httpd
 
-      LaunchConfigurationName: !Sub "${AWS::StackName}-launch-config"
-
   TargetInstanceASG:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: !Sub "${AWS::StackName}-target-asg"
       LaunchConfigurationName: !Ref TargetInstanceConfig
       MinSize: !Ref NumTargetEC2Instances
       MaxSize: !Ref NumTargetEC2Instances

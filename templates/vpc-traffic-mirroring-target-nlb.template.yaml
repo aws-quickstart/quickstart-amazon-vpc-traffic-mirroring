@@ -1,6 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: VPC Traffic Mirroring target template. (qs-1s0om7h6j)
+Description: >- 
+  VPC Traffic Mirroring NLB template. Template is launched if traffic mirror
+  target type is set to NLB. Template creates NLB to use as Traffic Mirroring
+  target. Template can also be launched standalone (qs-1s0om7h6j).
 
 Metadata:
   QSLint:
@@ -29,7 +32,6 @@ Metadata:
       - Label:
           default: 'Network Load Balancer Configuration'
         Parameters:
-          - NLBName
           - NLBScheme
           - NLBSubnet1ID
           - NLBSubnet2ID
@@ -37,33 +39,20 @@ Metadata:
           default: 'Target group configuration'
         Parameters:
           - VPCID
-          - TargetGroupName
     ParameterLabels:
       VPCID:
-        default: VPC ID  
-      NLBName:
-        default: Network Load Balancer Name
+        default: VPC ID
       NLBScheme:
         default: Network Load Balancer Scheme
       NLBSubnet1ID:
         default: ID of Subnet 1 to be associated with NLB
       NLBSubnet2ID:
-        default: ID of Subnet 2 to be associated with NLB        
-      TargetGroupName:
-        default: Target group name
+        default: ID of Subnet 2 to be associated with NLB
 
 Parameters:
   VPCID:
     Description: ID of the VPC (e.g., vpc-0343606e).
     Type: 'AWS::EC2::VPC::Id'
-  NLBName:
-    Description: >-
-      Network Load Balancer name. This name must be unique within your AWS
-      account and can have a maximum of 32 alphanumeric characters and 
-      hyphens. A name cannot begin or end with a hyphen.
-    Type: String
-    Default: tm-target-nlb1
-    ConstraintDescription: Must be a valid ELB Name
   NLBScheme:
     Description: >-
       Network Load Balancer scheme. Valid values are internet-facing and 
@@ -79,18 +68,12 @@ Parameters:
   NLBSubnet2ID:
     Description: ID of Subnet 2 to be associated with NLB (e.g., subnet-11223344, subnet-55667788).
     Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: Must be a valid subnet ID    
-  TargetGroupName:
-    Description: Target group name.
-    Type: String
-    Default: tm-targets-tg1
-    ConstraintDescription: Must be a valid target group name
+    ConstraintDescription: Must be a valid subnet ID
 
 Resources:
   Nlb:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Ref NLBName
       Scheme: !Ref NLBScheme
       Type: network
       Subnets: 
@@ -103,7 +86,6 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Ref TargetGroupName
       Port: 4789
       Protocol: UDP
       TargetGroupAttributes:

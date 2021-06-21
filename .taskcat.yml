@@ -23,7 +23,5 @@ project:
     QSS3BucketName: $[taskcat_autobucket]
 tests:
   tm-targets:
-    parameters:
-      NLBName: traffic-mirror-nlb1
     regions:
       - us-west-2
