@@ -6,8 +6,6 @@ Description: >-
   instance(s) (qs-1s0om7h3r).
 
 Metadata:
-  QSLint:
-    Exclusions: [W9901]
   QuickStartDocumentation:
     EntrypointName: "Launch into a new VPC"
     Order: 1
@@ -125,7 +123,7 @@ Metadata:
         default: Allowed bastion external access CIDR
       VPCCIDR:
         default: VPC CIDR     
-  cfn-lint: { config: { ignore_checks: [E9007] } }
+  cfn-lint: { config: { ignore_checks: [W9901] } }
 
 Parameters:
   AvailabilityZones:

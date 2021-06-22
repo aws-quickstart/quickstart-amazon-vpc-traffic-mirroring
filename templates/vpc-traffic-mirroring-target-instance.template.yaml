@@ -8,8 +8,6 @@ Description: >-
   launched as a stand alone template (qs-1s0om7h6b).
 
 Metadata:
-  QSLint:
-    Exclusions: [W9901]
   LintSpellExclude:
     - Linux
     - Amazon
@@ -80,7 +78,7 @@ Metadata:
         default: Target group ARN
       LatestAmazonLinux2AmiId:
         default: Amazon Linux 2 AMI ID
-
+  cfn-lint: { config: { ignore_checks: [W9901] } }
 Parameters:
   VPCCIDR:
     AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
@@ -161,7 +159,7 @@ Parameters:
   TargetGroupARN:
     Description: Target group ARN. Not required if TrafficMirrorTargetType is not NLB.
     Type: String
-    Default: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-targets/73e2d6bc24d8a067'
+    Default: ''
     ConstraintDescription: Must be a valid target group ARN
 
 Conditions:

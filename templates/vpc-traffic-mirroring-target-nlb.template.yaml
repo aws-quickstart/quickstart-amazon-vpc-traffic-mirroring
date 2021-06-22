@@ -6,8 +6,6 @@ Description: >-
   target. Template can also be launched standalone (qs-1s0om7h6j).
 
 Metadata:
-  QSLint:
-    Exclusions: [W9901]
   LintSpellExclude:
     - Linux
     - Amazon
@@ -48,7 +46,7 @@ Metadata:
         default: ID of Subnet 1 to be associated with NLB
       NLBSubnet2ID:
         default: ID of Subnet 2 to be associated with NLB
-
+  cfn-lint: { config: { ignore_checks: [W9901] } }
 Parameters:
   VPCID:
     Description: ID of the VPC (e.g., vpc-0343606e).
@@ -113,5 +111,5 @@ Outputs:
     Description: Network Load Balancer ARN
     Value: !Ref Nlb
   TargeGroupARN:
-    Description: Target Group ARN
+    Description: Target group ARN
     Value: !Ref TargetGroup
