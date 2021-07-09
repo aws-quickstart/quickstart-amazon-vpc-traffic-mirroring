@@ -6,9 +6,9 @@ project:
   shorten_stack_name: true
   regions:
   - us-west-2
-  template: templates/vpc-traffic-mirroring-primary.template.yaml
+  template: templates/vpc-traffic-mirroring-primary.template
   parameters:
-    StackName: VpcTmTestStack
+    StackName: AL2-Suricata
     AvailabilityZones: $[taskcat_getaz_2]
     BastionInstanceType: t3.medium
     KeyPairName: $[taskcat_getkeypair]
@@ -24,19 +24,11 @@ project:
 tests:
   vpc-tm-target-nlb:
     regions:
-      - eu-west-1
-      - us-east-1
-      - us-east-2
-      - ca-central-1
-      - ap-southeast-1
-      - ap-northeast-1
+      - us-west-2
+    parameters:
+      TrafficMirrorTargetType: NLB      
   vpc-tm-target-eni:
     regions:
-      - us-west-1
       - us-west-2
-      - eu-west-2
-      - eu-west-3
-      - eu-central-1
-      - ap-southeast-2
     parameters:
       TrafficMirrorTargetType: ENI
