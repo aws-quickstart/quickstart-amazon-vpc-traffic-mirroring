@@ -7,17 +7,189 @@
 == Post-deployment steps
 // If post-deployment steps are required, add them here. If not, remove the heading
 
+=== Verify Suricata is installed and running on Amazon Linux 2 EC2 instance:
+
+1. Grab EC2 instance id:
+```
+aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-name tCaT-vpc-tm-target-eni-bcb5ad-TrafficMirrorTargetStack-13O7TEKYCNA43-TargetInstanceASG-1A66G9G1DFY58 \
+  | grep -i instanceid | awk '{print $2}'
+```
+Sample output:
+```
+➜ : aws autoscaling describe-auto-scaling-groups \
+  --auto-scaling-group-name tCaT-vpc-tm-target-eni-bcb5ad-TrafficMirrorTargetStack-13O7TEKYCNA43-TargetInstanceASG-1A66G9G1DFY58 \
+  | grep -i instanceid | awk '{print $2}'
+"i-01c10f3669304c29d",
+"i-06928479bdbfe9679",
+➜ :
+```
+
+2. For each instance id, grab the private IP address:
+```
+aws ec2 describe-instances \
+  --instance-ids i-01c10f3669304c29d \
+  | grep -i PrivateIpAddress |  awk '{ print $2 }' | head -1 | cut -d"," -f1
+```
+Sample output:
+```
+➜ : aws ec2 describe-instances \
+  --instance-ids i-01c10f3669304c29d \
+  | grep -i PrivateIpAddress |  awk '{ print $2 }' | head -1 | cut -d"," -f1
+"10.0.16.80"
+➜ :
+```
+
+3. Access intance through bastion host:
+Sample output:
+```
+➜ : ssh -A -i test.pem ec2-user@34.220.61.131
+Last login: Fri Jul  9 20:58:39 2021 from 205.251.233.183
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+[ec2-user@ip-10-0-144-185 ~]$ ssh 10.0.16.80
+Last login: Fri Jul  9 20:58:40 2021 from ip-10-0-144-185.us-west-2.compute.internal
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+No packages needed for security; 2 packages available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-10-0-16-80 ~]$
+```
+
+4. Verify Suricata is installed and running:
+
+Suricata version:
+```
+suricata build-info |head -1
+```
+Sample output:
+```
+[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
+Suricata 6.0.3
+[ec2-user@ip-10-0-16-80 ~]$
+```
+
+Suricata service state:
+```
+systemctl status suricata
+```
+Sample output:
+```
+[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
+Suricata 6.0.3
+[ec2-user@ip-10-0-16-80 ~]$ systemctl status suricata
+● suricata.service - Suricata Intrusion Detection Service
+   Loaded: loaded (/usr/lib/systemd/system/suricata.service; enabled; vendor preset: disabled)
+   Active: active (running) since Fri 2021-07-09 19:15:20 UTC; 1h 57min ago
+     Docs: man:suricata(1)
+ Main PID: 2771 (Suricata-Main)
+   CGroup: /system.slice/suricata.service
+           └─2771 /sbin/suricata -c /etc/suricata/suricata.yaml --pidfile /var/run/suricata.pid -i eth0 --user suricata
+
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: Starting Suricata Intrusion Detection Service...
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: Started Suricata Intrusion Detection Service.
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal suricata[2771]: 9/7/2021 -- 19:15:20 - <Notice> - This is Suricata version 6.0.3 RELEASE runn...M mode
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: [/usr/lib/systemd/system/suricata.service:17] Unknown lvalue 'MemoryDenyWriteExec...rvice'
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: [/usr/lib/systemd/system/suricata.service:18] Unknown lvalue 'LockPersonality' in...rvice'
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: [/usr/lib/systemd/system/suricata.service:19] Unknown lvalue 'ProtectControlGroup...rvice'
+Jul 09 19:15:20 ip-10-0-16-80.us-west-2.compute.internal systemd[1]: [/usr/lib/systemd/system/suricata.service:20] Unknown lvalue 'ProtectKernelModule...rvice'
+Jul 09 19:15:28 ip-10-0-16-80.us-west-2.compute.internal suricata[2771]: 9/7/2021 -- 19:15:28 - <Notice> - all 2 packet processing threads, 4 manageme...arted.
+Hint: Some lines were ellipsized, use -l to show in full.
+[ec2-user@ip-10-0-16-80 ~]$
+```
+
+=== Linux Bastion Host:
+
+Refer to [Post-deployment steps for Linux Bastion Host](https://aws-quickstart.github.io/quickstart-linux-bastion/#_post_deployment_steps)
+
 == Best practices for using {partner-product-short-name} on AWS
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
 
+The architecture built by this Quick Start supports AWS best practices for high availability and security.
+
+* Both Linux bastion hosts and Amazon Linux 2 (AL2) instances running Suricata are deployed in two Availability Zones. You can configure the number for each instance at launch.
+* An Auto Scaling group (ASG) ensures that the number of instances always matches the desired capacity you specify during launch. Auto Scaling group is created for both Linux Bastion hosts as well as VPC Traffic Mirroring target instances
+* Bastion hosts are deployed in the public subnets of the VPC.
+* [Suricata](https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html) an open source Network IDS, IPS and Network Security Monitoring engine is installed on AL2 instance through userData.
+* AL2 instances running Suricata are deployed in the private subnets of the VPC.
+* VPC Traffic Mirroring target type is configurable. You can choose between Network Load Balancer (NLB) and Elastic Network Interface (ENI) and resource are created accordingly.
+* If you are using NLB as the VPC Traffic Mirroring target, Quick Start creates NLB (with scheme internal) and related target group. It also associates Auto Scaling group for AL2 instances running Suricata with the target group. 
+* Elastic IP addresses are associated with bastion instances to allow these IP addresses from on-premises firewalls. When an instance is shut down, the Auto Scaling group launches a new instance, and the existing Elastic IP addresses are associated with it. This ensures that the same trusted Elastic IP addresses are used at all times.
+* Inbound access to bastion hosts is locked down to known CIDR scopes. This is achieved by associating the bastion instances with a security group. The Quick Start creates a BastionSecurityGroup resource for this purpose.
+* Inbound access to AL2 instances running Suricata is locked down to bastion host.
+* Ports are limited to allow only the necessary access to the bastion hosts. For Linux bastion hosts, TCP port 22 for SSH connections is typically the only port allowed.
+
+We recommend that you follow these best practices when using the architecture built by the Quick Start:
+
+* Select appropriate instance type for AL2 instances running Suricata.
+* Before using NLB or AL2 instance as VPC Traffic Mirroing target, verify appropriate version of Suricata is installed and running.
+* Verify you monitor Amazon EC2 instance network traffic using Suricata
+* Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to [getting start guide](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html) for configuring VPC Traffic Mirroring.
+* For Linux bastion host, refer to best practices for using Linux bastion host](https://aws-quickstart.github.io/quickstart-linux-bastion/#_best_practices_for_using_linux_bastion_hosts_on_aws)
+
 _Add any best practices for using the software._
+
+Quick Start bootstraps AL2 instances to install and run Suricata. It does not configure Suricatra. For how to configure Suricata, refer to [Suricata documentation](https://suricata.readthedocs.io/en/suricata-6.0.3/index.html).
 
 == Security
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
+This Quick Start provisions one Linux bastion host in each Availability Zone with a single security group. This security group is required for remote access from the Internet. The security group is configured as follows:
+
+=== Inbound
+|===
+|Source|Protocol|Ports
+
+|Remote access CIDR|TCP|22
+|Remote access CIDR|ICMP|N/A
+|===
+
+=== Outbound
+|===
+|Destination|Protocol|Ports
+
+|0.0.0.0/0 |All|All
+|===
+
+This Quick Start also provisions one Amazon Linux 2 instance running Suricata in each Availability Zone with a single security group. This security group is required for remote access from the bastion host. The security group is configured as follows:
+
+=== Inbound
+|===
+|Source|Protocol|Ports
+
+|VPC CIDR|All|All
+|Bastion Security Group|All|All
+|===
+
+=== Outbound
+|===
+|Destination|Protocol|Ports
+
+|0.0.0.0/0 |All|All
+|===
+
+For more information, see https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Security.html[Internetwork traffic privacy in Amazon VPC^]
+
+Depending on Traffic Mirroing target type, Quick Start also provisions an NLB. Since NLB is use as a target for network monitor, NLB scheme is set to internal and is not user configurable.
 
 _Add any security-related information._
 
 == Other useful information
 //Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
+
+* [AWS CloudFormation Documentation](https://aws.amazon.com/documentation/cloudformation/)
+* [What is Amazon VPC Traffic Mirroring?](https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html)
+* [What is Suricata?](https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html)
+* [What is Amazon EC2?](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/)
+* [What is Amazon EC2 Auto Scaling?](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html)
+* [What is a Network Load Balancer?](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html)
+* [What is Amazon VPC?][https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html]
 
 _Add any other details that will help the customer use the software on AWS._
