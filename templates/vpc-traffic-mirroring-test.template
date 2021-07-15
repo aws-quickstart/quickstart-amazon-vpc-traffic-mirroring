@@ -1,0 +1,313 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >- 
+  VPC Traffic Mirroring test template. Template creates 2 Amazon Linux 2 EC2 instance(s). Configures 
+  VPC Traffic Mirroring to monitor TCP port 80 traffic between these two instances. Resources are 
+  created in existing VPC setup and assumes you have configured appropriate resources to use as
+  VPC Traffic Mirroring target (qs-1s0om7h6b).
+
+Metadata:
+  LintSpellExclude:
+    - Linux
+    - Amazon
+    - VPC
+    - Traffic Mirroring
+    - Network Load Balancer
+    - CIDR
+    - DMZ
+    - GB
+    - Region
+    - S3
+    - AmazonS3
+    - QSS3BucketName
+    - Quick Start
+    - SSH
+    - customizing
+    - ID
+    - VPCID
+    - vpc
+    - EC2
+    - ARN
+    - Subnet
+    - Suricata
+    - NLB
+    - ENI
+    - c5n.large
+    - TrafficMirrorTargetType
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: 'Traffic Mirroring test instance configuration'
+        Parameters:
+          - VPCID
+          - VPCCIDR
+          - TestInstanceSubnetID
+          - KeyPairName
+          - TestInstanceSecurityGroupIDs
+          - LatestAmazonLinux2AmiId
+      - Label:
+          default: 'Traffic Mirroring configuration'
+        Parameters:
+          - TrafficMirrorTargetNLBARN
+          - TrafficMirrorTargetENIID    
+
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR block
+      VPCID:
+        default: VPC ID      
+      TestInstanceSubnetID:
+        default: Subnet ID to associate with instances  
+      KeyPairName:
+        default: Key pair required for accessing target EC2 instance
+      TestInstanceSecurityGroupIDs:
+        default: Security group IDs
+      LatestAmazonLinux2AmiId:
+        default: Amazon Linux 2 AMI ID
+      TrafficMirrorTargetNLBARN:
+        default: NLB ARN for Traffic Mirror target
+      TrafficMirrorTargetENIID:
+        default: Network interface ID for Traffic Mirror target
+  cfn-lint: { config: { ignore_checks: [W9901] } }
+
+Parameters:
+  VPCCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC.
+    Type: String
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+  VPCID:
+    Description: ID of the VPC (e.g., vpc-0343606e).
+    Type: AWS::EC2::VPC::Id
+    ConstraintDescription: Must be a valid VPC ID
+  TestInstanceSubnetID:
+    Description: Subnet ID to be associated with test instances (e.g., subnet-11223344, subnet-55667788).
+    Type: AWS::EC2::Subnet::Id
+    ConstraintDescription: Must be a valid subnet ID
+  KeyPairName:
+    Description: EC2 key pair required for accessing EC2 instance.
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair
+  LatestAmazonLinux2AmiId:
+    Description: Latest Amazon Linux 2 AMI ID.
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  TestInstanceSecurityGroupIDs:
+    Description: ID of security group to associate with test instances.
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    ConstraintDescription: Must be a valid security group ID   
+  TrafficMirrorTargetNLBARN:
+    Description: ARN of Network Load Balancer used as Traffic Mirror target.
+    Type: String
+    ConstraintDescription: Must be a valid Network Load Balancer ARN
+  TrafficMirrorTargetENIID:
+    Description: ID of network interface used as Traffic Mirror target.
+    Type: String
+    ConstraintDescription: Must be a valid elastic network interface ID
+
+Resources:
+  TestInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole          
+            Principal:
+              Service:
+                - !Sub 'ec2.${AWS::URLSuffix}'
+
+  TestInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref TestInstanceRole
+
+  TestClientMgmtInterface:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref TestInstanceSubnetID
+      Description: Interface for controlling traffic such as SSH
+      GroupSet: !Ref TestInstanceSecurityGroupIDs
+      Tags:
+        - Key: Network
+          Value: Management
+
+  TestClientInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmazonLinux2AmiId
+      KeyName: !Ref KeyPairName
+      InstanceType: t3.micro
+      IamInstanceProfile: !Ref TestInstanceProfile
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref TestClientMgmtInterface
+          DeviceIndex: 0
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+      UserData:
+        'Fn::Base64': !Sub |
+          #!/bin/bash -xe
+          # Install required packages:
+          yum update -y
+
+          # Set dark background for vim:
+          touch /home/ec2-user/.vimrc
+          echo "set background=dark" >> /home/ec2-user/.vimrc          
+
+          # Configure hostname:
+          hostnamectl set-hostname vpctm-test-client            
+      Tags:
+        - Key: Name
+          Value: 'vpctm-test-client'
+
+  TestServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmazonLinux2AmiId
+      KeyName: !Ref KeyPairName
+      InstanceType: t3.micro
+      IamInstanceProfile: !Ref TestInstanceProfile
+      SecurityGroupIds: !Ref TestInstanceSecurityGroupIDs   
+      SubnetId: !Ref TestInstanceSubnetID
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 8
+      UserData:
+        'Fn::Base64': !Sub |
+          #!/bin/bash -xe
+          # Install required packages:
+          yum update -y
+          yum install httpd -y
+
+          # Set dark background for vim:
+          touch /home/ec2-user/.vimrc
+          echo "set background=dark" >> /home/ec2-user/.vimrc          
+
+          # Configure hostname:
+          hostnamectl set-hostname vpctm-test-server
+
+          # Add index.html:
+          touch /var/www/html/index.html
+          curl http://169.254.169.254/latest/dynamic/instance-identity/document > /home/ec2-user/iid
+          export instance_az=$(cat /home/ec2-user/iid |grep 'availability' | awk -F': ' '{print $2}' | awk -F',' '{print $1}' | awk -F'"' '{print$2}')          
+          cat <<EOT >> /var/www/html/index.html
+          <html>
+            <head>
+              <title>Amazon VPC Traffic Mirroring Test</title>
+              <meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1'>
+            </head>
+            <body bgcolor=black>
+              <h1 style="color: white; text-align:center;" >Welcom to Amazon VPC Traffic Mirroing!</h1>
+              <p style="color: orange; text-align:center;">
+              This server instance is instantiated in $instance_az in ${AWS::Region}
+              </p>
+              <h3 style="color: green; text-align:center;">Happy Testing!</h3>
+            </body>
+          </html>
+          EOT
+
+          # enable and start httpd service:
+          systemctl enable httpd
+          systemctl start httpd
+      Tags:
+        - Key: Name
+          Value: 'vpctm-test-server'
+  
+  TestNLBTrafficMirrorTarget:
+    Type: AWS::EC2::TrafficMirrorTarget
+    Properties:
+      Description: "Example traffic mirror target associated with a network load balancer"
+      NetworkLoadBalancerArn: !Ref TrafficMirrorTargetNLBARN
+      Tags:
+        - Key: "Name"
+          Value: "TestNLBTarget"
+
+  TestENITrafficMirrorTarget:
+    Type: AWS::EC2::TrafficMirrorTarget
+    Properties:
+      Description: "Example traffic mirror target associated with a network interface"
+      NetworkInterfaceId: !Ref TrafficMirrorTargetENIID
+      Tags:
+        - Key: "Name"
+          Value: "TestENITarget"
+  
+  TestTrafficMirrorFilter:
+    Type: AWS::EC2::TrafficMirrorFilter
+    Properties:
+      Description: "Example traffic mirror filter"
+      NetworkServices:
+        - "amazon-dns"
+      Tags:
+        - Key: "Name"
+          Value: "TestFilter"
+
+  TestIngressTrafficMirrorFilterRule:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: "Example ingress http traffic mirror filter rule"
+      TrafficMirrorFilterId: !Ref TestTrafficMirrorFilter
+      TrafficDirection: ingress
+      RuleNumber: 10
+      DestinationCidrBlock: !Ref VPCCIDR
+      SourceCidrBlock: !Ref VPCCIDR
+      RuleAction: accept
+      Protocol: 6
+      SourcePortRange:
+        FromPort: 80
+        ToPort: 80
+      DestinationPortRange:
+        FromPort: 1024
+        ToPort: 65535
+
+  TestEgressTrafficMirrorFilterRule:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: "Example ingress http traffic mirror filter rule"
+      TrafficMirrorFilterId: !Ref TestTrafficMirrorFilter
+      TrafficDirection: egress
+      RuleNumber: 10
+      DestinationCidrBlock: !Ref VPCCIDR
+      SourceCidrBlock: !Ref VPCCIDR
+      RuleAction: accept
+      Protocol: 6
+      SourcePortRange:
+        FromPort: 1024
+        ToPort: 65535
+      DestinationPortRange:
+        FromPort: 80
+        ToPort: 80
+
+  TestNLBTrafficMirrorSession:
+    DependsOn: TestClientInstance  
+    Type: AWS::EC2::TrafficMirrorSession
+    Properties:
+      Description: "Example traffic mirror session with NLB as target"
+      NetworkInterfaceId: !Ref TestClientMgmtInterface
+      TrafficMirrorTargetId: !Ref TestNLBTrafficMirrorTarget
+      TrafficMirrorFilterId: !Ref TestTrafficMirrorFilter
+      SessionNumber: 1
+      PacketLength: 100
+      VirtualNetworkId: 1234
+      Tags:
+        - Key: "Name"
+          Value: "TestNLBSession"
+
+Outputs:
+  TestClientInstnacePrivateIp:
+    Description: Test client instance Private IP
+    Value: !GetAtt TestClientMgmtInterface.PrimaryPrivateIpAddress
+  TestServerInstnacePrivateIp:
+    Description: Test server instance Private IP
+    Value: !GetAtt TestServerInstance.PrivateIp      
+         

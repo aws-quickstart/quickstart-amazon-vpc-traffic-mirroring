@@ -3,6 +3,7 @@
 ==== Prepare your AWS account
 
 ==== Choose an AWS Region
+
 * Before deploying the stack, in the AWS Management Console, choose an AWS Region from the top toolbar.
 +
 :xrefstyle: short
@@ -10,7 +11,8 @@
 .Selecting an AWS Region
 image::../images/region.png[region,width=25%,height=25%,align="center"]
 +
-NOTE: Consider choosing a Region where you want monitor Amazon EC2 intance network traffic using VPC Traffic Mirroring.
+NOTE: Consider choosing a Region where you want monitor Amazon EC2 intance network traffic using 
+VPC Traffic Mirroring.
 
 _Describe any setup required in the partner portal/account prior to template launch_
 
@@ -28,19 +30,23 @@ To create a http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.htm
 :xrefstyle: short
 [#keypair]
 .Creating a key pair
-image::../images/keypair.png[keypair,width=100%,height=100%]
+image::../images/key_pair.png[keypair,width=100%,height=100%]
 +
+
 Amazon EC2 uses public-key cryptography to encrypt and decrypt login information. To
 be able to log in to your instances, you must create a key pair. On Linux, the key pair is
 used to authenticate SSH login.
 
 ==== Amazon Linux 2 EC2 instance type
 
-Suricata is an open source Network IDS, IPS and Network Security Monitoring engine. 
+Suricata is an open source Network Intrusion Detection System (IDS), Intrusion Prevention System (IPS) 
+and Network Security Monitoring (NSM) engine. 
 
-You might want to use single target for multiple sources. In doing so target can become resource constrained. You need to benchmark your performance to appropriately size your EC2 instance running Suricata.
+You might want to use single target for multiple sources. In doing so target can become resource constrained. 
+You need to benchmark your performance to appropriately select and size your EC2 instance running Suricata.
 
-You can also horizontally scale EC2 instances by front ending them with a network load balancer (NLB) and use NLB as a target instead. 
+You can also horizontally scale EC2 instances running Suricata by front ending them with a network load balancer (NLB) 
+and use NLB as a target instead. 
 
 ==== Suricata
 

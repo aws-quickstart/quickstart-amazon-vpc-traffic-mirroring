@@ -1,3 +1,11 @@
 // Include details about any licenses and how to sign up. Provide links as appropriate. If no licenses are required, clarify that. The following paragraphs provide examples of details you can provide. Remove italics, and rephrase as appropriate.
 
-Quick Start installs [Suricata](https://suricata.readthedocs.io/en/suricata-6.0.3/index.html) on an Amazon Linux 2 EC2 instance. Suricata is an open source Network IDS, IPS and Network Security Monitoring engine. It is owned by the the Open Information Security Foundation ([OISF](https://oisf.net/)). The Suricata source code is [licensed under](https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/index.html) version 2 of the [GNU General Public License](https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/gnu-gpl-v2.0.html). You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using the Quick Start.
+This Quick Start installs [https://suricata.io/[Suricata^] on an Amazon Linux 2 EC2 instance. 
+Suricata is an open source Network IDS, IPS and Network Security Monitoring engine. It is owned by 
+the the Open Information Security Foundation ([OISF](https://oisf.net/)). 
+
+The https://suricata.io/features/open-source/[Suricata source code^] is licensed under 
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.html[version 2 of the [GNU General Public License^]. 
+
+You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. 
+There is no additional cost for using the Quick Start.

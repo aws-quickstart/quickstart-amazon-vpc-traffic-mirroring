@@ -2,14 +2,19 @@
 // Identify your target audience and explain how/why they would use this Quick Start.
 //Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
 
-You can use open-source tool to monitor network traffic from Amazon EC2 instances. The following tools work with Traffic Mirroring:
-  * Suricata — For more information see the [Suricata website](https://suricata.io/)
-  * Zeek — For more information, see the [Zeek Network Monitor Security website](https://zeek.org/)
+This Quick Start deployment guide provides instructions for deploying Amazon Elastic Compute Cloud 
+(Amazon EC2) instance with https://suricata.io/[Suricata^] software installed on it in an Amazon 
+Virtual Private Cloud (Amazon VPC) environment on the Amazon Web Services (AWS) Cloud. The Quick Start 
+also provides http://aws.amazon.com/cloudformation/[AWS CloudFormation^] templates that automate the deployment.
 
-These open-source tools support VXLAN decapsulation, and they can be used at scale to monitor VPC traffic. For information about how Zeek handles VXLAN support and to download the code, see [Zeek vxlan](https://github.com/zeek/zeek/tree/master/src/analyzer/protocol/vxlan) on the GitHub website. For information about how Suricata handles VXLAN support and to download the code, see [Suricata](https://github.com/OISF/suricata) on the GitHub website. 
+This Quick Start is for security infrastructure architects, DevSecOps engineers and administrators 
+who wants to monitor Amazon EC2 instance network traffic using Suricata.
 
-The Quick Start deploys open-source Suricata on either a single EC2 instance for limited scale deployments, or behind a Network Load Balancer (NLB) in an Auto Scaling group for highly-available larger deployments.
+http://aws.amazon.com/quickstart/[Quick Starts^] are automated reference deployments for AWS Cloud infrastructure
+components and key enterprise workloads on the AWS Cloud. Each Quick Start launches,
+configures, and runs AWS compute, network, storage, and other services, using AWS best
+practices for security and availability.
 
-This Quick Start is for security infrastructure architects, DevSecOps engineers and administrators who wants to monitor Amazon EC2 instance network traffic using Suricata.
-
-The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to [Traffic Mirroring getting start guide](https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html) for configuring VPC Traffic Mirroring.
+This Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to 
+https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html[Traffic Mirroring getting start guide^]
+for configuring VPC Traffic Mirroring.

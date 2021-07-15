@@ -8,23 +8,25 @@ AWS Cloud.
 
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} on AWS
-image::../images/architecture_diagram.jpg[Architecture]
+image::../images/architecture_diagram.jpg[Architecture, width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
 * A highly available architecture that spans two Availability Zones (AZ)
 * A VPC configured with public and private subnets as per the AWS best practices.
 * An Internet gateway (IGW) to allow access to Internet.
-* Network address translation gateway (NAT GW) in each AZ to allow outbound Internet access for resources in private subnets.
-* A Linux bastion host in each public subnet with an Elastic IP address to allow inbound SSH (Secure Shell) access to Amazon EC2 instances in public and private subnets.
-* Amazon Linux 2 (AL2) EC2 instance with suricate installed on it in private subnet.
+* Network address translation gateway (NAT GW) in each AZ to allow outbound Internet access for 
+resources in private subnets. This allows instances in private subnet to install packages like
+Suricata from the Internet.
+* A Linux bastion host in each public subnet with an Elastic IP address to allow inbound SSH (Secure Shell) 
+access to Amazon EC2 instances in public and private subnets.
+* Amazon Linux 2 (AL2) EC2 instance with Suricata software installed on it in a private subnet.
 * Amazon EC2 Auto Scaling group for Linux bastion host and AL2 EC2 instances. Number of instances are configurable.
 * If TrafficMirrorTargetType=NLB, creates Network Load Balancer (NLB) to distribute traffic to AL2 EC2 instances.
-* Security groups to control inbound and outbound traffic.
+* Security groups for Linux bastion host and AL2 EC2 instance to control inbound and outbound traffic.
 * A set of Elastic IP (EIP) addresses to match the number of bastion hosts and NAT GWs.
 * An IAM role and profile that allows access to AWS Systems Manager from AL2 EC2 instances
 * An Amazon CloudWatch Logs group for the Linux bastion host shell history logs.
-
 
 [.small]#*You can launch just the [vpc-traffic-mirroring-target](../../templates/vpc-traffic-mirroring-target.template) template to either create NLB + AL2 EC2 instances or just AL2 EC2 instances in an existing VPC.
 

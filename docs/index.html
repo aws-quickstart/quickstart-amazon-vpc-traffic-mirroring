@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.15">
-<title>Monintor Amazon EC2 instance network traffic using Suricata on the AWS Cloud</title>
+<title>Monitor Amazon EC2 instance network traffic using Suricata on the AWS Cloud</title>
 <style>
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -825,7 +825,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
-<li><a href="#_monintor_amazon_ec2_instance_network_traffic_using_suricata_on_aws">Monintor Amazon EC2 instance network traffic using Suricata on AWS</a></li>
+<li><a href="#_monitor_amazon_ec2_instance_network_traffic_using_suricata_on_aws">Monitor Amazon EC2 instance network traffic using Suricata on AWS</a></li>
 <li><a href="#_aws_costs">AWS costs</a></li>
 <li><a href="#_software_licenses">Software licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
@@ -842,20 +842,23 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_launch_the_quick_start">Launch the Quick Start</a></li>
 </ul>
 </li>
-<li><a href="#_test_the_deployment">Test the deployment</a></li>
 <li><a href="#_post_deployment_steps">Post-deployment steps</a>
 <ul class="sectlevel2">
-<li><a href="#_verify_suricata_is_installed_and_running_on_amazon_linux_2_ec2_instance">Verify Suricata is installed and running on Amazon Linux 2 EC2 instance:</a></li>
+<li><a href="#_verify_suricata_is_installed_and_running_on_amazon_linux_2_al2_ec2_instance">Verify Suricata is installed and running on Amazon Linux 2 (AL2) EC2 instance:</a></li>
 <li><a href="#_linux_bastion_host">Linux Bastion Host:</a></li>
+</ul>
+</li>
+<li><a href="#_test_the_deployment">Test the deployment</a>
+<ul class="sectlevel2">
+<li><a href="#_test_traffic_is_being_mirrored_to_target_instance">Test traffic is being mirrored to target instance:</a></li>
+<li><a href="#_test_monitoring_network_traffic_using_suricata">Test monitoring network traffic using Suricata:</a></li>
 </ul>
 </li>
 <li><a href="#_best_practices_for_using_suricata_on_amazon_linux_2_on_aws">Best practices for using Suricata on Amazon Linux 2 on AWS</a></li>
 <li><a href="#_security">Security</a>
 <ul class="sectlevel2">
-<li><a href="#_inbound">Inbound</a></li>
-<li><a href="#_outbound">Outbound</a></li>
-<li><a href="#_inbound_2">Inbound</a></li>
-<li><a href="#_outbound_2">Outbound</a></li>
+<li><a href="#_security_group_for_linux_bastion_host">Security group for Linux bastion host:</a></li>
+<li><a href="#_security_group_for_amazon_linux_2_ec2_instance_running_suricata">Security group for Amazon Linux 2 EC2 instance running Suricata:</a></li>
 </ul>
 </li>
 <li><a href="#_other_useful_information">Other useful information</a></li>
@@ -872,7 +875,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_monintor_amazon_ec2_instance_network_traffic_using_suricata_on_the_aws_cloud" class="discrete text-center">Monintor Amazon EC2 instance network traffic using Suricata on the AWS Cloud</h2>
+<h2 id="_monitor_amazon_ec2_instance_network_traffic_using_suricata_on_the_aws_cloud" class="discrete text-center">Monitor Amazon EC2 instance network traffic using Suricata on the AWS Cloud</h2>
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
@@ -928,21 +931,25 @@ report bugs, or submit feature ideas for this Quick Start.
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>You can use open-source tool to monitor network traffic from Amazon EC2 instances. The following tools work with Traffic Mirroring:
-  * Suricata — For more information see the [Suricata website](<a href="https://suricata.io/" class="bare">https://suricata.io/</a>)
-  * Zeek — For more information, see the [Zeek Network Monitor Security website](<a href="https://zeek.org/" class="bare">https://zeek.org/</a>)</p>
+<p>This Quick Start deployment guide provides instructions for deploying Amazon Elastic Compute Cloud
+(Amazon EC2) instance with <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> software installed on it in an Amazon
+Virtual Private Cloud (Amazon VPC) environment on the Amazon Web Services (AWS) Cloud. The Quick Start
+also provides <a href="http://aws.amazon.com/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> templates that automate the deployment.</p>
 </div>
 <div class="paragraph">
-<p>These open-source tools support VXLAN decapsulation, and they can be used at scale to monitor VPC traffic. For information about how Zeek handles VXLAN support and to download the code, see [Zeek vxlan](<a href="https://github.com/zeek/zeek/tree/master/src/analyzer/protocol/vxlan" class="bare">https://github.com/zeek/zeek/tree/master/src/analyzer/protocol/vxlan</a>) on the GitHub website. For information about how Suricata handles VXLAN support and to download the code, see [Suricata](<a href="https://github.com/OISF/suricata" class="bare">https://github.com/OISF/suricata</a>) on the GitHub website.</p>
+<p>This Quick Start is for security infrastructure architects, DevSecOps engineers and administrators
+who wants to monitor Amazon EC2 instance network traffic using Suricata.</p>
 </div>
 <div class="paragraph">
-<p>The Quick Start deploys open-source Suricata on either a single EC2 instance for limited scale deployments, or behind a Network Load Balancer (NLB) in an Auto Scaling group for highly-available larger deployments.</p>
+<p><a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments for AWS Cloud infrastructure
+components and key enterprise workloads on the AWS Cloud. Each Quick Start launches,
+configures, and runs AWS compute, network, storage, and other services, using AWS best
+practices for security and availability.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for security infrastructure architects, DevSecOps engineers and administrators who wants to monitor Amazon EC2 instance network traffic using Suricata.</p>
-</div>
-<div class="paragraph">
-<p>The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to [Traffic Mirroring getting start guide](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html</a>) for configuring VPC Traffic Mirroring.</p>
+<p>This Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to
+<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" target="_blank" rel="noopener">Traffic Mirroring getting start guide</a>
+for configuring VPC Traffic Mirroring.</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -950,7 +957,7 @@ report bugs, or submit feature ideas for this Quick Start.
 </div>
 </div>
 <div class="sect1">
-<h2 id="_monintor_amazon_ec2_instance_network_traffic_using_suricata_on_aws">Monintor Amazon EC2 instance network traffic using Suricata on AWS</h2>
+<h2 id="_monitor_amazon_ec2_instance_network_traffic_using_suricata_on_aws">Monitor Amazon EC2 instance network traffic using Suricata on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/product_description.adoc</code></strong></em></p>
@@ -962,27 +969,52 @@ report bugs, or submit feature ideas for this Quick Start.
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Traffic Mirroring is an Amazon VPC feature that you can use to copy network traffic from an elastic network interface of Amazon EC2 instances. You can then send the traffic to out-of-band security and monitoring appliances for:
-  * Content inspection
-  * Threat monitoring
-  * Troubleshooting</p>
+<p>This Quick Start provides ability to use <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> for monitoring Amazon EC2
+instance network traffic using <a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">Amazon VPC Traffic Mirroring</a>.
+The Quick Start deploys open-source Suricata on either a single Amazon Linux 2
+Elastic Compute Cloud (EC2) instance for limited scale deployments, or behind a Network Load Balancer (NLB)
+in an Auto Scaling group for highly-available larger deployments.</p>
 </div>
 <div class="paragraph">
-<p>The security and monitoring appliances can be deployed as individual instances, or as a fleet of instances behind a Network Load Balancer with a UDP listener. Traffic Mirroring supports filters and packet truncation, so that you only extract the traffic of interest to monitor by using monitoring tools of your choice.</p>
+<p>Quick Start deploys:
+* Amazon Virtual Private Cloud (VPC)
+using the <a href="https://fwd.aws/9VdxN">Amazon VPC Quick Start reference
+deployment</a>.
+* Linux bastion host using the
+<a href="https://aws-quickstart.github.io/quickstart-linux-bastion/" target="_blank" rel="noopener">Linux Bastion Hosts on AWS Quick Start reference deployment</a>
+* If TrafficMirrorTargetType=NLB:
+<strong> Creates Network Load Balancer (NLB) with scheme internal
+</strong> Creates target group to process VXLAN traffic
+<strong> In a private subnet, in an Auto Scaling group, creates Amazon Linux 2 EC2 instance with Suricata software installed on it
+</strong> Associates the target group with the Auto Scaling group
+* If TrafficMirrorTargetType=ENI:
+** In a private subnet, in an Auto Scaling group, creates Amazon Linux 2 EC2 instance with Suricata software installed on it</p>
 </div>
 <div class="paragraph">
-<p>You can use open-source tool to monitor network traffic from Amazon EC2 instances. The following tools work with Traffic Mirroring:
-  * Suricata — For more information see the [Suricata website](<a href="https://suricata.io/" class="bare">https://suricata.io/</a>)
-  * Zeek — For more information, see the [Zeek Network Monitor Security website](<a href="https://zeek.org/" class="bare">https://zeek.org/</a>)</p>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">Amazon VPC Traffic Mirroring</a>
+is an Amazon VPC feature that you can use to copy network traffic from an elastic
+network interface of Amazon EC2 instances. You can then send the traffic to out-of-band security and
+monitoring appliances for:
+* Content inspection
+* Threat monitoring
+* Troubleshooting</p>
 </div>
 <div class="paragraph">
-<p>These open-source tools support VXLAN decapsulation, and they can be used at scale to monitor VPC traffic. For information about how Zeek handles VXLAN support and to download the code, see [Zeek vxlan](<a href="https://github.com/zeek/zeek/tree/master/src/analyzer/protocol/vxlan" class="bare">https://github.com/zeek/zeek/tree/master/src/analyzer/protocol/vxlan</a>) on the GitHub website. For information about how Suricata handles VXLAN support and to download the code, see [Suricata](<a href="https://github.com/OISF/suricata" class="bare">https://github.com/OISF/suricata</a>) on the GitHub website.</p>
+<p>The security and monitoring appliances can be deployed as individual instances, or as a fleet of
+instances behind a Network Load Balancer with a UDP listener. Traffic Mirroring supports filters and
+packet truncation, so that you only extract the traffic of interest to monitor by using monitoring
+tools of your choice.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start provides ability to use Suricata for monitoring Amazon EC2 instance network traffic. The Quick Start deploys open-source Suricata on either a single EC2 instance for limited scale deployments, or behind a Network Load Balancer (NLB) in an Auto Scaling group for highly-available larger deployments.</p>
+<p>You can use <a href="https://docs.aws.amazon.com/vpc/latest/mirroring/tm-example-open-source.html">open-source tool</a>
+like <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> or <a href="https://zeek.org/" target="_blank" rel="noopener">Zeek</a> to monitor network traffic from Amazon EC2 instances.
+These open-source tools support VXLAN decapsulation, and they can be used at scale to monitor VPC
+traffic.</p>
 </div>
 <div class="paragraph">
-<p>The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to [Traffic Mirroring getting start guide](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html</a>) for configuring VPC Traffic Mirroring.</p>
+<p>The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to
+[Traffic Mirroring getting start guide](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html</a>)
+for configuring VPC Traffic Mirroring.</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -1029,7 +1061,17 @@ After you deploy the Quick Start, create <a href="https://docs.aws.amazon.com/aw
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>Quick Start installs [Suricata](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/index.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/index.html</a>) on an Amazon Linux 2 EC2 instance. Suricata is an open source Network IDS, IPS and Network Security Monitoring engine. It is owned by the the Open Information Security Foundation ([OISF](<a href="https://oisf.net/)" class="bare">https://oisf.net/)</a>). The Suricata source code is [licensed under](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/index.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/index.html</a>) version 2 of the [GNU General Public License](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/gnu-gpl-v2.0.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/licenses/gnu-gpl-v2.0.html</a>). You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using the Quick Start.</p>
+<p>This Quick Start installs [<a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> on an Amazon Linux 2 EC2 instance.
+Suricata is an open source Network IDS, IPS and Network Security Monitoring engine. It is owned by
+the the Open Information Security Foundation ([OISF](<a href="https://oisf.net/)" class="bare">https://oisf.net/)</a>).</p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://suricata.io/features/open-source/" target="_blank" rel="noopener">Suricata source code</a> is licensed under
+<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank" rel="noopener">version 2 of the [GNU General Public License</a>.</p>
+</div>
+<div class="paragraph">
+<p>You are responsible for the cost of the AWS services used while running this Quick Start reference deployment.
+There is no additional cost for using the Quick Start.</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -1055,7 +1097,7 @@ AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
-<img src="images/architecture_diagram.jpg" alt="Architecture">
+<img src="images/architecture_diagram.jpg" alt="Architecture" width="100%" height="100%">
 </div>
 <div class="title">Figure 1. Quick Start architecture for Suricata on Amazon Linux 2 on AWS</div>
 </div>
@@ -1074,13 +1116,16 @@ AWS Cloud.</p>
 <p>An Internet gateway (IGW) to allow access to Internet.</p>
 </li>
 <li>
-<p>Network address translation gateway (NAT GW) in each AZ to allow outbound Internet access for resources in private subnets.</p>
+<p>Network address translation gateway (NAT GW) in each AZ to allow outbound Internet access for
+resources in private subnets. This allows instances in private subnet to install packages like
+Suricata from the Internet.</p>
 </li>
 <li>
-<p>A Linux bastion host in each public subnet with an Elastic IP address to allow inbound SSH (Secure Shell) access to Amazon EC2 instances in public and private subnets.</p>
+<p>A Linux bastion host in each public subnet with an Elastic IP address to allow inbound SSH (Secure Shell)
+access to Amazon EC2 instances in public and private subnets.</p>
 </li>
 <li>
-<p>Amazon Linux 2 (AL2) EC2 instance with suricate installed on it in private subnet.</p>
+<p>Amazon Linux 2 (AL2) EC2 instance with Suricata software installed on it in a private subnet.</p>
 </li>
 <li>
 <p>Amazon EC2 Auto Scaling group for Linux bastion host and AL2 EC2 instances. Number of instances are configurable.</p>
@@ -1089,7 +1134,7 @@ AWS Cloud.</p>
 <p>If TrafficMirrorTargetType=NLB, creates Network Load Balancer (NLB) to distribute traffic to AL2 EC2 instances.</p>
 </li>
 <li>
-<p>Security groups to control inbound and outbound traffic.</p>
+<p>Security groups for Linux bastion host and AL2 EC2 instance to control inbound and outbound traffic.</p>
 </li>
 <li>
 <p>A set of Elastic IP (EIP) addresses to match the number of bastion hosts and NAT GWs.</p>
@@ -1134,7 +1179,37 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
-<p>This Quick Start also assumes familiarity with [Amazon VPC Traffic Mirroring](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html</a>) and [Suricata](<a href="https://suricata.io/" class="bare">https://suricata.io/</a>).</p>
+<p>This Quick Start also assumes familiarity with the following AWS services and components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://aws.amazon.com/documentation/vpc/">Amazon Virtual Private Cloud (Amazon VPC)</a></p>
+</li>
+<li>
+<p><a href="http://aws.amazon.com/documentation/ec2/">Amazon Elastic Compute Cloud (Amazon EC2)</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html">Amazon Elastic Block Storage (Amazon EBS)</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-gateway.html">NAT gateways</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/autoscaling/latest/userguide/">Amazon EC2 Auto Scaling</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/">Amazon CloudWatch Logs</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">Amazon VPC Traffic Mirroring</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This Quick Start also assumes familiarity with:
+* <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a>, open source intrusion detection (IDS), intrusion prevention (IPS),
+network security monitoring (NSM)</p>
 </div></div></td>
 </tr>
 </tbody>
@@ -1177,35 +1252,31 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPCs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Elastic IP addresses</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Security groups</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AWS Identity and Access Management (IAM) roles</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Auto Scaling groups</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Application Load Balancers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Network Load Balancers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;type&gt; instances</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amazon Linux 2 instances</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Depends on Auto Scaling number selected</p></td>
 </tr>
 </tbody>
 </table>
@@ -1220,16 +1291,104 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <div class="paragraph">
 <p>This Quick Start supports the following Regions:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>us-east-1, US East (N. Virginia) (EXAMPLE)</p>
-</li>
-<li>
-<p>us-east-2, US East (Ohio) (EXAMPLE)</p>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Code</th>
+<th class="tableblock halign-left valign-top">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">us-east-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">US East (Ohio)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">us-east-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">US East (N. Virginia)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">us-west-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">US West (N. California)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">us-west-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">US West (Oregon)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">af-south-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Africa (Cape Town)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-east-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Hong Kong)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-south-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Mumbai)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-northeast-3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Osaka-Local)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-northeast-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Seoul)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-southeast-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Singapore)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-southeast-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Sydney)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ap-northeast-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Asia Pacific (Tokyo)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ca-central-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Canada (Central)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-central-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (Frankfurt)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-west-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (Ireland)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-west-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (London)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-south-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (Milan)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-west-3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (Paris)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eu-north-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Europe (Stockholm)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">me-south-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Middle East (Bahrain)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sa-east-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">South America (São Paulo)</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1291,7 +1450,8 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Consider choosing a Region where you want monitor Amazon EC2 intance network traffic using VPC Traffic Mirroring.
+Consider choosing a Region where you want monitor Amazon EC2 intance network traffic using
+VPC Traffic Mirroring.
 </td>
 </tr>
 </table>
@@ -1326,7 +1486,7 @@ Consider choosing a Region where you want monitor Amazon EC2 intance network tra
 <p>Enter a name and choose <strong>Create</strong>.</p>
 <div id="keypair" class="imageblock">
 <div class="content">
-<img src="images/keypair.png" alt="keypair" width="100%" height="100%">
+<img src="images/key_pair.png" alt="keypair" width="100%" height="100%">
 </div>
 <div class="title">Figure 3. Creating a key pair</div>
 </div>
@@ -1342,13 +1502,16 @@ used to authenticate SSH login.</p>
 <div class="sect3">
 <h4 id="_amazon_linux_2_ec2_instance_type">Amazon Linux 2 EC2 instance type</h4>
 <div class="paragraph">
-<p>Suricata is an open source Network IDS, IPS and Network Security Monitoring engine.</p>
+<p>Suricata is an open source Network Intrusion Detection System (IDS), Intrusion Prevention System (IPS)
+and Network Security Monitoring (NSM) engine.</p>
 </div>
 <div class="paragraph">
-<p>You might want to use single target for multiple sources. In doing so target can become resource constrained. You need to benchmark your performance to appropriately size your EC2 instance running Suricata.</p>
+<p>You might want to use single target for multiple sources. In doing so target can become resource constrained.
+You need to benchmark your performance to appropriately select and size your EC2 instance running Suricata.</p>
 </div>
 <div class="paragraph">
-<p>You can also horizontally scale EC2 instances by front ending them with a network load balancer (NLB) and use NLB as a target instead.</p>
+<p>You can also horizontally scale EC2 instances running Suricata by front ending them with a network load balancer (NLB)
+and use NLB as a target instead.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1454,13 +1617,23 @@ If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure
 </table>
 </li>
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where you build the network infrastructure. The template is launched in the us-west-2 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a> earlier in this guide.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change
+it if necessary. This Region is where you build the network infrastructure. The template is launched
+in the us-west-2 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a>
+earlier in this guide.</p>
 </li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
 <li>
 <p>On the <strong>Create stack</strong> page, keep the default setting for the template URL, and then choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. For details on each parameter, see the <a href="#_parameter_reference">Parameter reference</a> section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
+<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template.
+Provide values for the parameters that require input. For all other parameters, review the default settings and
+customize them as necessary. For details on each parameter, see the <a href="#_parameter_reference">Parameter reference</a> 
+section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
 </li>
 </ol>
 </div>
@@ -1484,26 +1657,20 @@ If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure
 </div>
 </div>
 <div class="sect1">
-<h2 id="_test_the_deployment">Test the deployment</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
 <h2 id="_post_deployment_steps">Post-deployment steps</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_verify_suricata_is_installed_and_running_on_amazon_linux_2_ec2_instance">Verify Suricata is installed and running on Amazon Linux 2 EC2 instance:</h3>
-<div class="olist arabic">
-<ol class="arabic">
+<h3 id="_verify_suricata_is_installed_and_running_on_amazon_linux_2_al2_ec2_instance">Verify Suricata is installed and running on Amazon Linux 2 (AL2) EC2 instance:</h3>
+<div class="ulist">
+<ul>
 <li>
 <p>Grab EC2 instance id:</p>
 </li>
-</ol>
+</ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>aws autoscaling describe-auto-scaling-groups \
+<pre class="highlight"><code class="language-bash" data-lang="bash">aws autoscaling describe-auto-scaling-groups \
   --auto-scaling-group-name tCaT-vpc-tm-target-eni-bcb5ad-TrafficMirrorTargetStack-13O7TEKYCNA43-TargetInstanceASG-1A66G9G1DFY58 \
   | grep -i instanceid | awk '{print $2}'</code></pre>
 </div>
@@ -1513,7 +1680,7 @@ If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>➜ : aws autoscaling describe-auto-scaling-groups \
+<pre class="highlight"><code class="language-bash" data-lang="bash">➜ : aws autoscaling describe-auto-scaling-groups \
   --auto-scaling-group-name tCaT-vpc-tm-target-eni-bcb5ad-TrafficMirrorTargetStack-13O7TEKYCNA43-TargetInstanceASG-1A66G9G1DFY58 \
   | grep -i instanceid | awk '{print $2}'
 "i-01c10f3669304c29d",
@@ -1521,16 +1688,16 @@ If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure
 ➜ :</code></pre>
 </div>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
+<div class="ulist">
+<ul>
 <li>
 <p>For each instance id, grab the private IP address:</p>
 </li>
-</ol>
+</ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>aws ec2 describe-instances \
+<pre class="highlight"><code class="language-bash" data-lang="bash">aws ec2 describe-instances \
   --instance-ids i-01c10f3669304c29d \
   | grep -i PrivateIpAddress |  awk '{ print $2 }' | head -1 | cut -d"," -f1</code></pre>
 </div>
@@ -1540,24 +1707,26 @@ If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>➜ : aws ec2 describe-instances \
-  --instance-ids i-01c10f3669304c29d \
-  | grep -i PrivateIpAddress |  awk '{ print $2 }' | head -1 | cut -d"," -f1
-"10.0.16.80"
-➜ :</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">  ➜ : aws ec2 describe-instances \
+    --instance-ids i-01c10f3669304c29d \
+    | grep -i PrivateIpAddress |  awk '{ print $2 }' | head -1 | cut -d"," -f1
+  "10.0.16.80"
+  ➜ :</code></pre>
 </div>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
+<div class="ulist">
+<ul>
 <li>
-<p>Access intance through bastion host:
-Sample output:</p>
+<p>Access intance through bastion host:</p>
 </li>
-</ol>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>➜ : ssh -A -i test.pem ec2-user@34.220.61.131
+<pre class="highlight"><code class="language-bash" data-lang="bash">➜ : ssh -A -i test.pem ec2-user@34.220.61.131
 Last login: Fri Jul  9 20:58:39 2021 from 205.251.233.183
 
        __|  __|_  )
@@ -1578,19 +1747,19 @@ Run "sudo yum update" to apply all updates.
 [ec2-user@ip-10-0-16-80 ~]$</code></pre>
 </div>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
+<div class="ulist">
+<ul>
 <li>
 <p>Verify Suricata is installed and running:</p>
 </li>
-</ol>
+</ul>
 </div>
 <div class="paragraph">
 <p>Suricata version:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>suricata build-info |head -1</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">suricata build-info |head -1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1598,7 +1767,7 @@ Run "sudo yum update" to apply all updates.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
 Suricata 6.0.3
 [ec2-user@ip-10-0-16-80 ~]$</code></pre>
 </div>
@@ -1608,7 +1777,7 @@ Suricata 6.0.3
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>systemctl status suricata</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">systemctl status suricata</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1616,7 +1785,7 @@ Suricata 6.0.3
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-16-80 ~]$ suricata build-info |head -1
 Suricata 6.0.3
 [ec2-user@ip-10-0-16-80 ~]$ systemctl status suricata
 ● suricata.service - Suricata Intrusion Detection Service
@@ -1643,7 +1812,502 @@ Hint: Some lines were ellipsized, use -l to show in full.
 <div class="sect2">
 <h3 id="_linux_bastion_host">Linux Bastion Host:</h3>
 <div class="paragraph">
-<p>Refer to [Post-deployment steps for Linux Bastion Host](<a href="https://aws-quickstart.github.io/quickstart-linux-bastion/#_post_deployment_steps" class="bare">https://aws-quickstart.github.io/quickstart-linux-bastion/#_post_deployment_steps</a>)</p>
+<p>Refer to <a href="https://aws-quickstart.github.io/quickstart-linux-bastion/#_post_deployment_steps" target="_blank" rel="noopener">Post-deployment steps for Linux Bastion Host</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_the_deployment">Test the deployment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section, we will configure VPC Traffic Mirroring to monitor network traffic from Amazon EC2 instances.</p>
+</div>
+<div class="paragraph">
+<p>Test template deploys:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Two Amazon EC2 instances of type t3.micro, one for client and second one for the server</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Server instance is configured to run a simple web server</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Two Traffic Mirror targets, one for NLB and another one for the instance (network interface)</p>
+</li>
+<li>
+<p>One Traffic Mirror filter</p>
+</li>
+<li>
+<p>One Traffic Mirror session using NLB as the target</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Test deployment takes about 5 minutes to complete. Recommended to launch the test instances in private subnets.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sign in to your AWS account, launch the following AWS CloudFormation template. Before launching,
+verify region is same as the one where you deployed this Quick Start.</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 75%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Suricata on Amazon Linux 2 vpc-traffic-mirroing-test.template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_test_traffic_is_being_mirrored_to_target_instance">Test traffic is being mirrored to target instance:</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Through Linux bastion host, access the Amazon Linux 2 instance running Suricata. Verify it is from
+the same Availability Zone as the test instances launched above. We will refer to this terminal as
+target terminal.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Refer to Post-deployment steps for retrieving IP address of the Amazon Linux 2 instance.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">➜ : ssh -A -i test.pem ec2-user@54.200.4.82
+Last login: Wed Jul 14 22:29:45 2021 from 205.251.233.183
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+[ec2-user@ip-10-0-154-148 ~]$ ssh 10.0.19.160
+Last login: Wed Jul 14 22:30:46 2021 from ip-10-0-154-148.us-west-2.compute.internal
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+No packages needed for security; 2 packages available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-10-0-19-160 ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In another terminal, through Linux bastion host, access the client test instance. We will refer to
+to this terminal as client terminal.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>To view the client&#8217;s private IP addres, see the values displayed in the Outputs tab for the test stack.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-154-148 ~]$ ssh 10.0.4.71
+Last login: Wed Jul 14 22:31:13 2021 from ip-10-0-154-148.us-west-2.compute.internal
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+[ec2-user@vpctm-test-client ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the target terminal, using tcpdump start capturing traffic on VXLAN port 4789:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ sudo tcpdump -ni eth0 port 4789
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the client terminal, using curl, access the web server running on the server instance:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@vpctm-test-client ~]$ curl 10.0.2.149
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Amazon VPC Traffic Mirroring Test&lt;/title&gt;
+    &lt;meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1'&gt;
+  &lt;/head&gt;
+  &lt;body bgcolor=black&gt;
+    &lt;h1 style="color: white; text-align:center;" &gt;Welcom to Amazon VPC Traffic Mirroing!&lt;/h1&gt;
+    &lt;p style="color: orange; text-align:center;"&gt;
+    This server instance is instantiated in us-west-2a in us-west-2
+    &lt;/p&gt;
+    &lt;h3 style="color: green; text-align:center;"&gt;Happy Testing!&lt;/h3&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+[ec2-user@vpctm-test-client ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the target terminal where you are capturing the traffic, you will see the mirrored traffic:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ sudo tcpdump -ni eth0 port 4789
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+22:56:43.562551 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [.], ack 3745821560, win 211, options [nop,nop,TS val 3948372651 ecr 483745774], length 0
+22:56:43.562588 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP truncated-ip - 40 bytes missing! 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [P.], seq 0:74, ack 1, win 211, options [nop,nop,TS val 3948372651 ecr 483745774], length 74: HTTP: GET / HTTP/1.1
+22:56:43.562593 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.2.149.http &gt; 10.0.4.71.33100: Flags [.], ack 74, win 210, options [nop,nop,TS val 483745774 ecr 3948372651], length 0
+22:56:43.562687 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [S], seq 566027453, win 26883, options [mss 8961,sackOK,TS val 3948372651 ecr 0,nop,wscale 7], length 0
+22:56:43.562780 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP truncated-ip - 729 bytes missing! 10.0.2.149.http &gt; 10.0.4.71.33100: Flags [P.], seq 1:764, ack 74, win 210, options [nop,nop,TS val 483745775 ecr 3948372651], length 763: HTTP: HTTP/1.1 200 OK
+22:56:43.562808 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.2.149.http &gt; 10.0.4.71.33100: Flags [S.], seq 3745821559, ack 566027454, win 26847, options [mss 8961,sackOK,TS val 483745774 ecr 3948372651,nop,wscale 7], length 0
+22:56:43.562814 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [.], ack 764, win 222, options [nop,nop,TS val 3948372651 ecr 483745775], length 0
+22:56:43.562950 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [F.], seq 75, ack 764, win 222, options [nop,nop,TS val 3948372652 ecr 483745775], length 0
+22:56:43.563011 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.2.149.http &gt; 10.0.4.71.33100: Flags [F.], seq 764, ack 76, win 210, options [nop,nop,TS val 483745775 ecr 3948372652], length 0
+22:56:43.563033 IP 10.0.4.71.65502 &gt; 10.0.19.160.4789: VXLAN, flags [I] (0x08), vni 1234
+IP 10.0.4.71.33100 &gt; 10.0.2.149.http: Flags [.], ack 765, win 222, options [nop,nop,TS val 3948372652 ecr 483745775], length 0
+^C
+10 packets captured
+10 packets received by filter
+0 packets dropped by kernel
+[ec2-user@ip-10-0-19-160 ~]$</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this we successfully tested HTTP traffic between client and server instance is being mirrored on
+Amazon Linux 2 target instance running Suricata.</p>
+</div>
+<div class="paragraph">
+<p>In the next activity, we will test how to monitor traffic using Suricata. If you don&#8217;t plan to perform
+next activity, go ahead and delete vpc-traffic-mirroring-test.template.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_monitoring_network_traffic_using_suricata">Test monitoring network traffic using Suricata:</h3>
+<div class="paragraph">
+<p>This test activity performs a basic testing of logging HTTP traffic to Suricata. For more details refer
+to <a href="https://suricata.readthedocs.io/en/suricata-6.0.3/" target="_blank" rel="noopener">Suricata documentation</a></p>
+</div>
+<div class="paragraph">
+<p>By default HOME_NET variable is configured for RFC1918 address space: [192.168.0.0/16,10.0.0.0/8,172.16.0.0/12].
+We can keep using that or further restrict by setting HOME_NET to address space of which our subnet is part of.
+For this test activity, we will set it to 10.0.0.0/8.</p>
+</div>
+<div class="paragraph">
+<p>Open suricata.yml file. Under vars, search for line: HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+and comment it out. Search for line #HOME_NET: "[10.0.0.0/8]" and uncomment it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sudo vim /etc/suricata/suricata.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-yaml" data-lang="yaml">%YAML 1.1
+---
+
+# Suricata configuration file. In addition to the comments describing all
+# options in this file, full documentation can be found at:
+# https://suricata.readthedocs.io/en/latest/configuration/suricata-yaml.html
+
+##
+## Step 1: Inform Suricata about your network
+##
+
+vars:
+  # more specific is better for alert accuracy and performance
+  address-groups:
+    #HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    #HOME_NET: "[192.168.0.0/16]"
+    HOME_NET: "[10.0.0.0/8]"
+    #HOME_NET: "[172.16.0.0/12]"
+    #HOME_NET: "any"
+
+    EXTERNAL_NET: "!$HOME_NET"
+    #EXTERNAL_NET: "any"</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For this test activity, we create our own custom HTTP rule and use with Suricata:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sudo -s
+
+echo 'alert tcp $HOME_NET any -&gt; $HOME_NET 80 (msg:”Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server"; sid:200001; rev:1;)' &gt; /var/lib/suricata/rules/custom-http.rules
+
+ls -lth /var/lib/suricata/rules/custom-http.rules
+
+exit</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ sudo -s
+[root@ip-10-0-19-160 ec2-user]#
+[root@ip-10-0-19-160 ec2-user]# echo 'alert tcp $HOME_NET any -&gt; $HOME_NET 80 (msg:"Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server"; sid:200001; rev:1;)' &gt; /var/lib/suricata/rules/custom-http.rules
+[root@ip-10-0-19-160 ec2-user]#
+[root@ip-10-0-19-160 ec2-user]# ls -lth /var/lib/suricata/rules/custom-http.rules
+-rw-r--r-- 1 root suricata 148 Jul 14 23:14 /var/lib/suricata/rules/custom-http.rules
+[root@ip-10-0-19-160 ec2-user]# exit
+exit
+[ec2-user@ip-10-0-19-160 ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Update the Suricata configuration file so that custom rule that we create is included.</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sudo vim /etc/suricata/suricata.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and verify custom-http.rules file is added to the list of rules:</p>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">##
+## Configure Suricata to load Suricata-Update managed rules.
+##
+
+default-rule-path: /var/lib/suricata/rules
+
+rule-files:
+  - suricata.rules
+  - custom-http.rules</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Verify custom rule has been created, added to suricata.yaml and restart suricata:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sudo cat /var/lib/suricata/rules/custom-http.rules
+
+sudo systemctl restart suricata
+
+sudo systemctl status suricata</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ sudo cat /var/lib/suricata/rules/custom-http.rules
+alert tcp $HOME_NET any -&gt; $HOME_NET 80 (msg:"Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server"; sid:200001; rev:1;)
+[ec2-user@ip-10-0-19-160 ~]$ sudo systemctl restart suricata
+[ec2-user@ip-10-0-19-160 ~]$ sudo systemctl status suricata
+● suricata.service - Suricata Intrusion Detection Service
+   Loaded: loaded (/usr/lib/systemd/system/suricata.service; enabled; vendor preset: disabled)
+   Active: active (running) since Wed 2021-07-14 23:18:41 UTC; 5s ago
+     Docs: man:suricata(1)
+  Process: 28838 ExecStartPre=/bin/rm -f /var/run/suricata.pid (code=exited, status=0/SUCCESS)
+ Main PID: 28841 (Suricata-Main)
+   CGroup: /system.slice/suricata.service
+           └─28841 /sbin/suricata -c /etc/suricata/suricata.yaml --pidfile /var/run/sur...
+
+Jul 14 23:18:41 ip-10-0-19-160.us-west-2.compute.internal systemd[1]: Starting Suricata...
+Jul 14 23:18:41 ip-10-0-19-160.us-west-2.compute.internal systemd[1]: Started Suricata ...
+Jul 14 23:18:41 ip-10-0-19-160.us-west-2.compute.internal suricata[28841]: 14/7/2021 --...
+Hint: Some lines were ellipsized, use -l to show in full.
+[ec2-user@ip-10-0-19-160 ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Check Suricata log file to validate custom rule file was processed successfully. Depending on the number of
+rule files configured, you should should see: "x rule files processed. 22833 rules successfully loaded, 0 rules failed",
+where x is number of rule files:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">tail -10 /var/log/suricata/suricata.log</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ tail -10 /var/log/suricata/suricata.log
+14/7/2021 -- 23:58:33 - &lt;Info&gt; - stats output device (regular) initialized: stats.log
+14/7/2021 -- 23:58:33 - &lt;Info&gt; - Running in live mode, activating unix socket
+14/7/2021 -- 23:58:34 - &lt;Info&gt; - 2 rule files processed. 22833 rules successfully loaded, 0 rules failed
+14/7/2021 -- 23:58:34 - &lt;Info&gt; - Threshold config parsed: 0 rule(s) found
+14/7/2021 -- 23:58:34 - &lt;Info&gt; - 22836 signatures processed. 1234 are IP-only rules, 3918 are inspecting packet payload, 17482 inspect application layer, 107 are decoder event only
+14/7/2021 -- 23:58:41 - &lt;Info&gt; - Going to use 2 thread(s)
+14/7/2021 -- 23:58:41 - &lt;Info&gt; - Running in live mode, activating unix socket
+14/7/2021 -- 23:58:41 - &lt;Info&gt; - Using unix socket file '/var/run/suricata/suricata-command.socket'
+14/7/2021 -- 23:58:41 - &lt;Notice&gt; - all 2 packet processing threads, 4 management threads initialized, engine started.
+14/7/2021 -- 23:58:41 - &lt;Info&gt; - All AFP capture threads are running.
+[ec2-user@ip-10-0-19-160 ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By default Suricata will log alerts in two places:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>eve.json</p>
+</li>
+<li>
+<p>fast.log
+In the target terminal window, tail /var/log/suricata/fast.log:</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ tail -f /var/log/suricata/fast.log</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the client terminal, again access the web server using curl:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@vpctm-test-client ~]$ curl 10.0.2.149
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Amazon VPC Traffic Mirroring Test&lt;/title&gt;
+    &lt;meta http-equiv='Content-Type' content='text/html; charset=ISO-8859-1'&gt;
+  &lt;/head&gt;
+  &lt;body bgcolor=black&gt;
+    &lt;h1 style="color: white; text-align:center;" &gt;Welcom to Amazon VPC Traffic Mirroing!&lt;/h1&gt;
+    &lt;p style="color: orange; text-align:center;"&gt;
+    This server instance is instantiated in us-west-2a in us-west-2
+    &lt;/p&gt;
+    &lt;h3 style="color: green; text-align:center;"&gt;Happy Testing!&lt;/h3&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+[ec2-user@vpctm-test-client ~]$</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>In the target terminal you will see the messages being logged to fast.log:</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">[ec2-user@ip-10-0-19-160 ~]$ tail -f /var/log/suricata/fast.log
+07/15/2021-00:23:47.954068  [**] [1:200001:1] Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server [**] [Classification: (null)] [Priority: 3] {TCP} 10.0.6.167:32910 -&gt; 10.0.19.160:80
+07/15/2021-00:23:51.189198  [**] [1:200001:1] Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server [**] [Classification: (null)] [Priority: 3] {TCP} 10.0.4.71:33762 -&gt; 10.0.2.149:80
+07/15/2021-00:23:57.954143  [**] [1:200001:1] Testing Amazon VPC Traffic Mirroring, HTTP traffic detect - ingressing Server [**] [Classification: (null)] [Priority: 3] {TCP} 10.0.6.167:63517 -&gt; 10.0.19.160:80</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this we successfully tested logging HTTP traffic to Suricata using VPC Traffic Mirroring. At this
+point go ahead and delete the vpc-traffic-mirroring-test.template</p>
 </div>
 </div>
 </div>
@@ -1657,37 +2321,46 @@ Hint: Some lines were ellipsized, use -l to show in full.
 <div class="ulist">
 <ul>
 <li>
-<p>Both Linux bastion hosts and Amazon Linux 2 (AL2) instances running Suricata are deployed in two Availability Zones. You can configure the number for each instance at launch.</p>
+<p>Both Linux bastion hosts and Amazon Linux 2 (AL2) instances running Suricata are deployed in two
+Availability Zones. You can configure the number for each instance at launch.</p>
 </li>
 <li>
-<p>An Auto Scaling group (ASG) ensures that the number of instances always matches the desired capacity you specify during launch. Auto Scaling group is created for both Linux Bastion hosts as well as VPC Traffic Mirroring target instances</p>
+<p>An Auto Scaling group (ASG) ensures that the number of instances always matches the desired capacity
+you specify during launch. Auto Scaling group is created for both Linux Bastion hosts as well as VPC Traffic Mirroring target instances</p>
 </li>
 <li>
 <p>Bastion hosts are deployed in the public subnets of the VPC.</p>
 </li>
 <li>
-<p>[Suricata](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html</a>) an open source Network IDS, IPS and Network Security Monitoring engine is installed on AL2 instance through userData.</p>
+<p><a href="https://suricata.io" target="_blank" rel="noopener">Suricata</a> an open source Network Intrusion Detection System (IDS), Intrusion Prevention System (IPS)
+and Network Security Monitoring engine is installed on AL2 instance through userData.</p>
 </li>
 <li>
 <p>AL2 instances running Suricata are deployed in the private subnets of the VPC.</p>
 </li>
 <li>
-<p>VPC Traffic Mirroring target type is configurable. You can choose between Network Load Balancer (NLB) and Elastic Network Interface (ENI) and resource are created accordingly.</p>
+<p>VPC Traffic Mirroring target type is configurable. You can choose between Network Load Balancer (NLB)
+and Elastic Network Interface (ENI) and resource are created accordingly.</p>
 </li>
 <li>
-<p>If you are using NLB as the VPC Traffic Mirroring target, Quick Start creates NLB (with scheme internal) and related target group. It also associates Auto Scaling group for AL2 instances running Suricata with the target group.</p>
+<p>If you are using NLB as the VPC Traffic Mirroring target, Quick Start creates NLB (with scheme internal)
+and related target group. It also associates Auto Scaling group for AL2 instances running Suricata with the target group.</p>
 </li>
 <li>
-<p>Elastic IP addresses are associated with bastion instances to allow these IP addresses from on-premises firewalls. When an instance is shut down, the Auto Scaling group launches a new instance, and the existing Elastic IP addresses are associated with it. This ensures that the same trusted Elastic IP addresses are used at all times.</p>
+<p>Elastic IP addresses are associated with bastion instances to allow these IP addresses from on-premises
+firewalls. When an instance is shut down, the Auto Scaling group launches a new instance, and the
+existing Elastic IP addresses are associated with it. This ensures that the same trusted Elastic IP addresses are used at all times.</p>
 </li>
 <li>
-<p>Inbound access to bastion hosts is locked down to known CIDR scopes. This is achieved by associating the bastion instances with a security group. The Quick Start creates a BastionSecurityGroup resource for this purpose.</p>
+<p>Inbound access to bastion hosts is locked down to known CIDR scopes. This is achieved by associating
+the bastion instances with a security group. The Quick Start creates a BastionSecurityGroup resource for this purpose.</p>
 </li>
 <li>
 <p>Inbound access to AL2 instances running Suricata is locked down to bastion host.</p>
 </li>
 <li>
-<p>Ports are limited to allow only the necessary access to the bastion hosts. For Linux bastion hosts, TCP port 22 for SSH connections is typically the only port allowed.</p>
+<p>Ports are limited to allow only the necessary access to the bastion hosts. For Linux bastion hosts,
+TCP port 22 for SSH connections is typically the only port allowed.</p>
 </li>
 </ul>
 </div>
@@ -1706,10 +2379,11 @@ Hint: Some lines were ellipsized, use -l to show in full.
 <p>Verify you monitor Amazon EC2 instance network traffic using Suricata</p>
 </li>
 <li>
-<p>Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to [getting start guide](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html</a>) for configuring VPC Traffic Mirroring.</p>
+<p>Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to <a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html">VPC Traffic Mirroring getting start guide</a>
+for configuring VPC Traffic Mirroring.</p>
 </li>
 <li>
-<p>For Linux bastion host, refer to best practices for using Linux bastion host](<a href="https://aws-quickstart.github.io/quickstart-linux-bastion/#_best_practices_for_using_linux_bastion_hosts_on_aws" class="bare">https://aws-quickstart.github.io/quickstart-linux-bastion/#_best_practices_for_using_linux_bastion_hosts_on_aws</a>)</p>
+<p>For Linux bastion host, refer to <a href="https://aws-quickstart.github.io/quickstart-linux-bastion/#_best_practices_for_using_linux_bastion_hosts_on_aws" target="_blank" rel="noopener">best practices for using Linux bastion host</a></p>
 </li>
 </ul>
 </div>
@@ -1717,18 +2391,21 @@ Hint: Some lines were ellipsized, use -l to show in full.
 <p><em>Add any best practices for using the software.</em></p>
 </div>
 <div class="paragraph">
-<p>Quick Start bootstraps AL2 instances to install and run Suricata. It does not configure Suricatra. For how to configure Suricata, refer to [Suricata documentation](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/index.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/index.html</a>).</p>
+<p>Quick Start bootstraps Amazon Linux 2 EC2 instances to install and run Suricata. It does not configure
+Suricatra. For how to configure Suricata, refer to <a href="https://suricata.readthedocs.io/en/suricata-6.0.3/index.html" target="_blank" rel="noopener">Suricata documentation</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_security">Security</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_security_group_for_linux_bastion_host">Security group for Linux bastion host:</h3>
 <div class="paragraph">
 <p>This Quick Start provisions one Linux bastion host in each Availability Zone with a single security group. This security group is required for remote access from the Internet. The security group is configured as follows:</p>
 </div>
-<div class="sect2">
-<h3 id="_inbound">Inbound</h3>
+<div class="sect3">
+<h4 id="_inbound">Inbound</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1756,8 +2433,8 @@ Hint: Some lines were ellipsized, use -l to show in full.
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_outbound">Outbound</h3>
+<div class="sect3">
+<h4 id="_outbound">Outbound</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1779,12 +2456,15 @@ Hint: Some lines were ellipsized, use -l to show in full.
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>This Quick Start also provisions one Amazon Linux 2 instance running Suricata in each Availability Zone with a single security group. This security group is required for remote access from the bastion host. The security group is configured as follows:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_inbound_2">Inbound</h3>
+<h3 id="_security_group_for_amazon_linux_2_ec2_instance_running_suricata">Security group for Amazon Linux 2 EC2 instance running Suricata:</h3>
+<div class="paragraph">
+<p>This Quick Start also provisions one Amazon Linux 2 instance running Suricata in each Availability Zone with a single security group. This security group is required for remote access from the bastion host. The security group is configured as follows:</p>
+</div>
+<div class="sect3">
+<h4 id="_inbound_2">Inbound</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1812,8 +2492,8 @@ Hint: Some lines were ellipsized, use -l to show in full.
 </tbody>
 </table>
 </div>
-<div class="sect2">
-<h3 id="_outbound_2">Outbound</h3>
+<div class="sect3">
+<h4 id="_outbound_2">Outbound</h4>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -1847,31 +2527,75 @@ Hint: Some lines were ellipsized, use -l to show in full.
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="_other_useful_information">Other useful information</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>[AWS CloudFormation Documentation](<a href="https://aws.amazon.com/documentation/cloudformation/" class="bare">https://aws.amazon.com/documentation/cloudformation/</a>)</p>
+<p><a href="https://aws.amazon.com/documentation/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation Documentation</a></p>
 </li>
 <li>
-<p>[What is Amazon VPC Traffic Mirroring?](<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" class="bare">https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html</a>)</p>
+<p>Amazon Virtual Private Cloud (Amazon VPC):</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://aws.amazon.com/documentation/vpc/" target="_blank" rel="noopener">Amazon VPC Documentation</a></p>
 </li>
 <li>
-<p>[What is Suricata?](<a href="https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html" class="bare">https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html</a>)</p>
+<p><a href="https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html" target="_blank" rel="noopener">Security groups for your VPC</a></p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p>[What is Amazon EC2?](<a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/" class="bare">https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/</a>)</p>
+<p>Amazon Elastic Compute Cloud (Amazon EC2):</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/" target="_blank" rel="noopener">What is Amazon EC2?</a></p>
 </li>
 <li>
-<p>[What is Amazon EC2 Auto Scaling?](<a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html" class="bare">https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</a>)</p>
+<p><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html" target="_blank" rel="noopener">Elastic IP addresses</a></p>
 </li>
 <li>
-<p>[What is a Network Load Balancer?](<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html" class="bare">https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html</a>)</p>
+<p><a href="https://aws.amazon.com/autoscaling/" target="_blank" rel="noopener">What is Amazon Auto Scaling Group?</a></p>
 </li>
 <li>
-<p>[What is Amazon VPC?][<a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html" class="bare">https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html</a>]</p>
+<p><a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html" target="_blank" rel="noopener">What is a Network Load Balancer?</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Amazon VPC Traffic Mirroring (VPC Traffic Mirroring):</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">What is VPC Traffic Mirroring?</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/mirroring/tm-example-open-source.html" target="_blank" rel="noopener">Working with open-source tools for Traffic Mirroring</a></p>
+</li>
+<li>
+<p><a href="https://suricata.io" target="_blank" rel="noopener">Suricata</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://suricata.readthedocs.io/en/suricata-6.0.3/what-is-suricata.html" target="_blank" rel="noopener">What is Suricata?</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/using-vpc-traffic-mirroring-to-monitor-and-secure-your-aws-infrastructure/" target="_blank" rel="noopener">Using VPC Traffic Mirroring to monitor and secure your AWS infrastructure blog</a></p>
+</li>
+<li>
+<p><a href="https://github.com/aws-samples/aws-vpc-traffic-mirroring-source-automation" target="_blank" rel="noopener">Automate setting up of traffic mirroring based on VPCs, subnets, and tags as input</a></p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
@@ -1913,6 +2637,14 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 </div>
 <div class="paragraph">
 <p><strong>A.</strong> Launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template-size limitations. For more information, see <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS CloudFormation quotas</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Q.</strong> I am using Network Load Balancer (NLB) as the VPC Traffic Mirroring target, but I don&#8217;t see mirrored traffic.</p>
+</div>
+<div class="paragraph">
+<p><strong>A.</strong> By default, each load balancer node distributes traffic across the registered targets in its
+Availability Zone only. Verify you EC2 instance running Suricata are instantiated in both the Availability Zones.
+You can also look at enabling <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones" target="_blank" rel="noopener">cross-zone load balancing</a>.</p>
 </div>
 </div>
 </div>
