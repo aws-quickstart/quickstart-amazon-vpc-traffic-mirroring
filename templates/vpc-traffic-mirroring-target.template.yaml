@@ -1,11 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: >- 
-  VPC Traffic Mirroring instance template. Template creates Amazon Linux 2
+Description: >-
+  VPC Traffic Mirroring target template. Template creates Amazon Linux 2
   EC2 instance(s) with Suricata installed on it. Instances are launched in auto
   scaling group. If traffic mirror target type is set to NLB, template
-  associates auto scaling group with a target group. Template can also be
-  launched as a stand alone template (qs-1s0om7h6b).
+  also creates NLB, target group and listener and associates auto scaling group
+  with the target group. Template can also be launched as a stand alone 
+  template (qs-1s0om7h6b).
 
 Metadata:
   LintSpellExclude:
@@ -50,7 +51,6 @@ Metadata:
           - KeyPairName
           - BastionSecurityGroupID
           - TrafficMirrorTargetType
-          - TargetGroupARN
           - LatestAmazonLinux2AmiId
 
     ParameterLabels:
@@ -74,8 +74,6 @@ Metadata:
         default: Bastion security group ID
       TrafficMirrorTargetType:
         default: Traffic mirror target type
-      TargetGroupARN:
-        default: Target group ARN
       LatestAmazonLinux2AmiId:
         default: Amazon Linux 2 AMI ID
   cfn-lint: { config: { ignore_checks: [W9901] } }
@@ -155,17 +153,52 @@ Parameters:
     Type: String
     Default: NLB
     AllowedValues: ['NLB', 'ENI']
-    ConstraintDescription: Must be a valid traffic mirror target type    
-  TargetGroupARN:
-    Description: Target group ARN. Not required if TrafficMirrorTargetType is not NLB.
-    Type: String
-    Default: ''
-    ConstraintDescription: Must be a valid target group ARN
+    ConstraintDescription: Must be a valid traffic mirror target type
 
 Conditions:
   TargetTypeNLB: !Equals [!Ref TrafficMirrorTargetType, "NLB"]
 
 Resources:
+  Nlb:
+    Condition: TargetTypeNLB
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      Type: network
+      Subnets: 
+        - !Ref Subnet1ID
+        - !Ref Subnet2ID
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-nlb-1"
+
+  TargetGroup:
+    Condition: TargetTypeNLB
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 4789
+      Protocol: UDP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      VpcId: !Ref VPCID
+      HealthCheckPort: '80'
+      HealthCheckProtocol: HTTP 
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-nlb1-tg1"
+
+  Listener:
+    Condition: TargetTypeNLB
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Port: 4789
+      Protocol: UDP
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref Nlb
+
   TargetInstanceSg:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -290,7 +323,7 @@ Resources:
       LaunchConfigurationName: !Ref TargetInstanceConfig
       MinSize: !Ref NumTargetEC2Instances
       MaxSize: !Ref NumTargetEC2Instances
-      TargetGroupARNs: [!If [TargetTypeNLB, !Ref TargetGroupARN, !Ref AWS::NoValue]]
+      TargetGroupARNs: [!If [TargetTypeNLB, !Ref TargetGroup, !Ref AWS::NoValue]]
       VPCZoneIdentifier: 
         - !Ref Subnet1ID
         - !Ref Subnet2ID
