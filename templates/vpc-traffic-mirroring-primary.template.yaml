@@ -60,7 +60,6 @@ Metadata:
           default: Amazon VPC Traffic Mirroring target configuration
         Parameters:
           - TrafficMirrorTargetType
-          - NLBScheme
           - NumTargetEC2Instances
           - TargetEC2InstanceType
           - TargetEC2InstanceRootVolumeSize
@@ -97,8 +96,6 @@ Metadata:
         default: Number of bastion hosts
       TrafficMirrorTargetType:
         default: Traffic mirror target type
-      NLBScheme:
-        default: Network Load Balancer scheme
       NumTargetEC2Instances:
         default: Number of target EC2 instances
       TargetEC2InstanceType:
@@ -240,14 +237,6 @@ Parameters:
     Default: NLB
     AllowedValues: ['NLB', 'ENI']
     ConstraintDescription: Must be a valid traffic mirror target type
-  NLBScheme:
-    Description: >-
-      Network Load Balancer scheme. Valid values are internet-facing and 
-      internal. The default is internal.
-    Default: internal
-    AllowedValues: ['internet-facing', 'internal']
-    Type: String
-    ConstraintDescription: 'Must be a valid NLB scheme'
   NumTargetEC2Instances:
     AllowedValues:
       - '1'
@@ -346,7 +335,6 @@ Conditions:
   UsingDefaultBucket: !Equals
     - !Ref QSS3BucketName
     - 'aws-quickstart'
-  TargetTypeNLB: !Equals [!Ref TrafficMirrorTargetType, "NLB"]
 
 Resources:
   VPCStack:
@@ -392,25 +380,11 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         RemoteAccessCIDR: !Ref RemoteAccessCIDR
 
-  TrafficMirrorNLBStack:
-    Type: AWS::CloudFormation::Stack
-    Condition: TargetTypeNLB
-    Properties:
-      TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target-nlb.template.yaml
-        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-          S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-      Parameters:
-        NLBScheme: !Ref NLBScheme
-        NLBSubnet1ID: !GetAtt [VPCStack, Outputs.PrivateSubnet1AID]
-        NLBSubnet2ID: !GetAtt [VPCStack, Outputs.PrivateSubnet2AID]
-        VPCID: !GetAtt [VPCStack, Outputs.VPCID]
-
-  TrafficMirrorTargetInstanceStack:
+  TrafficMirrorTargetStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target-instance.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/vpc-traffic-mirroring-target.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
       Parameters:
@@ -424,7 +398,6 @@ Resources:
         KeyPairName: !Ref KeyPairName
         BastionSecurityGroupID: !GetAtt [BastionStack, Outputs.BastionSecurityGroupID]
         TrafficMirrorTargetType: !Ref TrafficMirrorTargetType
-        TargetGroupARN: !If [TargetTypeNLB, !GetAtt [TrafficMirrorNLBStack, Outputs.TargeGroupARN], !Ref AWS::NoValue]
 
 Outputs:
   Postdeployment:
