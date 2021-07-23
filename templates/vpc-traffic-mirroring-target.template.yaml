@@ -102,6 +102,7 @@ Parameters:
       - '2'
       - '3'
       - '4'
+    Default: '2'
     Description: The number of targets to create. The maximum number is four.
     Type: String        
   TargetEC2InstanceType:
@@ -334,3 +335,8 @@ Resources:
     UpdatePolicy:
       AutoScalingReplacingUpdate:
         WillReplace: true
+
+Outputs:
+  TargetInstanceASG:
+    Description: Suricata instances Auto Scaling group
+    Value: !Ref TargetInstanceASG
