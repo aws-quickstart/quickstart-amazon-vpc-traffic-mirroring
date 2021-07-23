@@ -29,10 +29,10 @@ Each deployment takes about {deployment_time} to complete.
 [cols="3,1"]
 |===
 ^|http://qs_launch_permalink[Deploy {partner-product-short-name} into a new VPC on AWS^]
-^|http://qs_template_permalink[View template^]
+^|https://github.com/aws-quickstart/quickstart-amazon-vpc-traffic-mirroring/blob/main/templates/vpc-traffic-mirroring-primary.template.yaml[View template^]
 
 ^|http://qs_launch_permalink[Deploy {partner-product-short-name} into an existing VPC on AWS^]
-^|http://qs_template_permalink[View template^]
+^|https://github.com/aws-quickstart/quickstart-amazon-vpc-traffic-mirroring/blob/main/templates/vpc-traffic-mirroring-target.template.yaml[View template^]
 |===
 +
 
