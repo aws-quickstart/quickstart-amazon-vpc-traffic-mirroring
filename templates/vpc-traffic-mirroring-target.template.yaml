@@ -153,7 +153,8 @@ Parameters:
     Type: AWS::EC2::SecurityGroup::Id
     ConstraintDescription: Must be a valid security group ID
   TrafficMirrorTargetType:
-    Description: 'Traffic mirror target type: NLB or ENI. For limited scale deployments, you may choose to skip the Network Load Balancer setup and work directly with Suricata deployed on a single Amazon Linux 2 instance by choosing TrafficMirrorTargetType as ENI.'
+    Description: 'When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances.
+      For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.'
     Type: String
     Default: NLB
     AllowedValues: ['NLB', 'ENI']
