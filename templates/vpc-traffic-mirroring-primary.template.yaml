@@ -27,6 +27,8 @@ Metadata:
     - SSH
     - ENI
     - customizing
+    - TrafficMirrorTargetType
+    - NumTargetEC2Instances
   'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
@@ -232,7 +234,7 @@ Parameters:
     Description: CIDR block for the public DMZ subnet 2, located in Availability Zone 2.
     Type: String
   TrafficMirrorTargetType:
-    Description: 'When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a Target Group with Suricata instances.
+    Description: 'When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances.
       For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.'
     Type: String
     Default: NLB
