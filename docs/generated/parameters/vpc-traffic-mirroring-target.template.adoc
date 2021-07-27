@@ -1,0 +1,17 @@
+
+.Traffic Mirroring target instance configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|VPC ID
+(`VPCID`)|`**__Requires input__**`|ID of the VPC (e.g., vpc-0343606e).|VPC CIDR block
+(`VPCCIDR`)|`10.0.0.0/24`|CIDR block for the VPC.|Subnet 1 ID
+(`Subnet1ID`)|`**__Requires input__**`|ID of Subnet 1 to be associated (e.g., subnet-11223344, subnet-55667788).|Subnet 2 ID
+(`Subnet2ID`)|`**__Requires input__**`|ID of Subnet 2 to be associated (e.g., subnet-11223344, subnet-55667788).|The number of target instances to create. The maximum number is four.
+(`NumTargetEC2Instances`)|`2`|The number of targets to create. The maximum number is four.|Target EC2 instance type
+(`TargetEC2InstanceType`)|`c5n.large`|Select EC2 instance type for Suricata target EC2 instance. Default is set to c5n.large.|Target EC2 instance size in GB
+(`TargetEC2InstanceRootVolumeSize`)|`8`|Target instance disk size in GB. Default is set to 8GB.|Key pair required for accessing target EC2 instance
+(`KeyPairName`)|`**__Requires input__**`|EC2 key pair required for accessing EC2 instance.|Bastion security group ID
+(`BastionSecurityGroupID`)|`**__Requires input__**`|ID of bastion security group to allow access to targets.|Traffic mirror target type
+(`TrafficMirrorTargetType`)|`NLB`|When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.|Amazon Linux 2 AMI ID
+(`LatestAmazonLinux2AmiId`)|`/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2`|Latest Amazon Linux 2 AMI ID.
+|===
