@@ -4,10 +4,10 @@
 == Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
 
-Follow the steps below to verify that Suricata is installed and running on the target instances.
+Perform the following steps to verify that Suricata is installed and running on the target instances.
 
-. Make a note of the TargetInstanceASG value shown in the *Outputs* tab.
-. Using either the AWS CLI or AWS Console (steps not shown), figure out the IDs of the instances in the Auto Scaling group. For example, you can use the CLI command below to fetch the instance IDs.
+. Make a note of the *TargetInstanceASG* value shown in the *Outputs* tab.
+. Using either AWS CLI or the AWS Management Console, identify the IDs of the instances in the Auto Scaling group. For example, you can use the following CLI command to fetch the instance IDs.
 +
 ```
 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${YOUR_ASG_NAME} --region ${DEPLOY_REGION} | grep -i instanceid | awk '{print $2}'
@@ -19,7 +19,7 @@ Sample output:
 "i-0c425ea76fe462214",
 ```
 +
-. Using either the AWS CLI or AWS Console (steps not shown), connect to any of the instances in the output of the previous command and verify that Suricata is installed.
+. Using either AWS CLI or the AWS Management Console, connect to any of the instances in the output of the previous command and verify that Suricata is installed.
 +
 ```
 aws ssm start-session --target ${INSTANCE_ID} --region ${DEPLOY_REGION}
