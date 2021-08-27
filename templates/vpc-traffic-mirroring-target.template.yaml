@@ -86,19 +86,19 @@ Parameters:
     Default: 10.0.0.0/24
     Description: CIDR block for the VPC.
     Type: String
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28.
   VPCID:
-    Description: ID of the VPC (e.g., vpc-0343606e).
+    Description: ID of the VPC (for example, vpc-0343606e).
     Type: AWS::EC2::VPC::Id
-    ConstraintDescription: Must be a valid VPC ID
+    ConstraintDescription: Must be a valid VPC ID.
   Subnet1ID:
-    Description: ID of Subnet 1 to be associated (e.g., subnet-11223344, subnet-55667788).
+    Description: ID of Subnet 1 to be associated (for example, subnet-11223344, subnet-55667788).
     Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: Must be a valid subnet ID
+    ConstraintDescription: Must be a valid subnet ID.
   Subnet2ID:
-    Description: ID of Subnet 2 to be associated (e.g., subnet-11223344, subnet-55667788).
+    Description: ID of Subnet 2 to be associated (for example, subnet-11223344, subnet-55667788).
     Type: AWS::EC2::Subnet::Id
-    ConstraintDescription: Must be a valid subnet ID    
+    ConstraintDescription: Must be a valid subnet ID.    
   NumTargetEC2Instances:
     AllowedValues:
       - '1'
@@ -136,14 +136,14 @@ Parameters:
       - c5n.9xlarge
       - c5n.18xlarge
   TargetEC2InstanceRootVolumeSize:
-    Description: Target instance disk size in GB. Default is set to 8GB.
+    Description: Target instance disk size in GB. Default is set to 8 GB.
     Default: 8
     Type: Number
-    ConstraintDescription: Should be a valid instance size in GB
+    ConstraintDescription: Should be a valid instance size in GB.
   KeyPairName:
     Description: EC2 key pair required for accessing EC2 instance.
     Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: Must be the name of an existing EC2 KeyPair
+    ConstraintDescription: Must be the name of an existing EC2 key pair.
   LatestAmazonLinux2AmiId:
     Description: Latest Amazon Linux 2 AMI ID.
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
@@ -151,14 +151,13 @@ Parameters:
   BastionSecurityGroupID:
     Description: ID of bastion security group to allow access to targets.
     Type: AWS::EC2::SecurityGroup::Id
-    ConstraintDescription: Must be a valid security group ID
+    ConstraintDescription: Must be a valid security group ID.
   TrafficMirrorTargetType:
-    Description: 'When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances.
-      For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.'
+    Description: 'Choose NLB to deploy a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, choose ENI and set NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.'
     Type: String
     Default: NLB
     AllowedValues: ['NLB', 'ENI']
-    ConstraintDescription: Must be a valid traffic mirror target type
+    ConstraintDescription: Must be a valid traffic mirror target type.
 
 Conditions:
   TargetTypeNLB: !Equals [!Ref TrafficMirrorTargetType, "NLB"]
@@ -210,8 +209,8 @@ Resources:
       VpcId: !Ref VPCID
       GroupName: !Sub "${AWS::StackName}-target-sg"
       GroupDescription: >-
-        Access to target ec2 instance: allow SSH and ICMP access from desired CIDR.
-        Allow all traffic from VPC CIDR
+        Access to target EC2 instance. Allow SSH and ICMP access from the desired CIDR.
+        Allow all traffic from VPC CIDR.
       SecurityGroupIngress:
         - CidrIp: !Ref VPCCIDR
           IpProtocol: "-1"
@@ -342,5 +341,5 @@ Resources:
 
 Outputs:
   TargetInstanceASG:
-    Description: Suricata instances Auto Scaling group
+    Description: Suricata instances Auto Scaling group.
     Value: !Ref TargetInstanceASG
