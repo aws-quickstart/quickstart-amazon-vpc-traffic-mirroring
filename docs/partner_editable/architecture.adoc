@@ -8,7 +8,7 @@ AWS Cloud.
 
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} on AWS
-image::../images/architecture_diagram.png[Architecture,width=715,height=485]
+image::../images/vpc-traffic-mirroring-architecture-diagram.png[Architecture,width=715,height=485]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
@@ -18,9 +18,10 @@ As shown in <<architecture1>>, the Quick Start sets up the following:
  ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*
  ** A Linux bastion host in an Auto Scaling group to allow inbound Secure Shell (SSH) access to EC2 instances in public and private subnets.*
 * In the private subnets:
- ** {partner-product-short-name} EC2 instances in an Auto Scaling group used for deploying across two Availability Zones, offering high availability.
- ** A Network Load Balancer (NLB) to balance traffic between the {partner-product-short-name} EC2 instances. For limited scale deployments, you may choose to skip the Network Load Balancer setup and work directly with Suricata deployed on a single Amazon Linux 2 instance by choosing `TrafficMirrorTargetType` as `ENI` and `NumTargetEC2Instances` as `1`. See link:#_parameter_reference[Parameter reference] section for details.
+ ** EC2 instances in an Auto Scaling group used for deploying across two Availability Zones, offering high availability.
+ ** A Network Load Balancer to balance traffic between the EC2 instances. For limited scale deployments, you can skip the Network Load Balancer setup and work directly with Suricata deployed on a single Amazon Linux 2 instance by choosing `TrafficMirrorTargetType` as `ENI` and `NumTargetEC2Instances` as `1`. See link:#_parameter_reference[Parameter reference] section for details.
 
 *The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.
 
-NOTE: The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html[Traffic Mirroring getting start guide^] for configuring VPC Traffic Mirroring.
+NOTE: This Quick Start does not configure VPC Traffic Mirroring. For information about configuring Traffic Mirroring to monitor your network traffic, see the  
+https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html[Traffic Mirroring getting start guide^].

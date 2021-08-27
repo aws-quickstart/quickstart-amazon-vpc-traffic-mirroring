@@ -2,31 +2,9 @@
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-This Quick Start provides ability to use https://suricata.io/[Suricata^] for monitoring Amazon EC2 
-instance network traffic using https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html[Amazon VPC Traffic Mirroring^]. 
-The Quick Start deploys open-source Suricata on either a single Amazon Linux 2 
-Elastic Compute Cloud (EC2) instance for limited scale deployments, or behind a Network Load Balancer (NLB) 
-in an Auto Scaling group for highly-available larger deployments.
+https://suricata.io/[Suricata^] is an open-source network intrusion detection system (IDS), intrusion prevention system (IPS), and network security monitoring (NSM) engine. Suricata supports Virtual Extensible LAN (VXLAN) for packet decapulation. You can install Suricata on an EC2 instance to monitor VPC traffic using Traffic Mirroring, a feature of Amazon VPC.
 
-https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html[Amazon VPC Traffic Mirroring^] 
-is an Amazon VPC feature that you can use to copy network traffic from an elastic 
-network interface of Amazon EC2 instances. You can then send the traffic to out-of-band security and 
-monitoring appliances for:
+Using Traffic Mirroring, you can copy network traffic from an elastic network interface of Amazon EC2 instances and then send the traffic to out-of-band security and monitoring appliances. Traffic Mirroring is used for troubleshooting, content inspection, and threat monitoring. 
 
-* Content inspection
-* Threat monitoring
-* Troubleshooting
-
-The security and monitoring appliances can be deployed as individual instances, or as a fleet of 
-instances behind a Network Load Balancer with a UDP listener. Traffic Mirroring supports filters and 
-packet truncation, so that you only extract the traffic of interest to monitor by using monitoring 
-tools of your choice. 
-
-You can use https://docs.aws.amazon.com/vpc/latest/mirroring/tm-example-open-source.html[open-source tool] 
-like https://suricata.io/[Suricata^] or https://zeek.org/[Zeek^] to monitor network traffic from Amazon EC2 instances. 
-These open-source tools support VXLAN decapsulation, and they can be used at scale to monitor VPC 
-traffic. 
- 
-The Quick Start does not configure VPC Traffic Mirroring to monitor your network traffic. Refer to 
-https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html[Traffic Mirroring getting start guide^]
-for configuring VPC Traffic Mirroring.
+You can deploy Suricata's security and monitoring appliances as individual instances, or as a fleet of 
+instances behind a Network Load Balancer with a User Datagram Protocol (UDP) listener. Traffic Mirroring supports filters and packet truncation, so you extract only the desired traffic of interest using a monitoring tools such as Suricata. 
