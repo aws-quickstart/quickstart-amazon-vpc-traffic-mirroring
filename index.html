@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.15">
-<title>Example Product Name on the AWS Cloud</title>
+<title>Amazon EC2 with Suricata on the AWS Cloud</title>
 <style>
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -825,7 +825,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
-<li><a href="#_example_product_name_on_aws">Example Product Name on AWS</a></li>
+<li><a href="#_amazon_ec2_with_suricata_on_aws">Amazon EC2 with Suricata on AWS</a></li>
 <li><a href="#_aws_costs">AWS costs</a></li>
 <li><a href="#_software_licenses">Software licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
@@ -843,16 +843,11 @@ p.footer-text a{color:#d7d8d8}
 </ul>
 </li>
 <li><a href="#_test_the_deployment">Test the deployment</a></li>
-<li><a href="#_post_deployment_steps">Post-deployment steps</a></li>
-<li><a href="#_best_practices_for_using_example_product_name_on_aws">Best practices for using Example Product Name on AWS</a></li>
-<li><a href="#_security">Security</a></li>
-<li><a href="#_other_useful_information">Other useful information</a></li>
 <li><a href="#_faq">FAQ</a></li>
-<li><a href="#_troubleshooting">Troubleshooting</a></li>
 <li><a href="#_customer_responsibility">Customer responsibility</a></li>
 <li><a href="#_parameter_reference">Parameter reference</a>
 <ul class="sectlevel2">
-<li><a href="#_parameters_for_deploying_into_an_new_vpc">Parameters for deploying into an new VPC</a></li>
+<li><a href="#_parameters_for_deploying_into_a_new_vpc">Parameters for deploying into a new VPC</a></li>
 <li><a href="#_parameters_for_deploying_into_an_existing_vpc">Parameters for deploying into an existing VPC</a></li>
 </ul>
 </li>
@@ -866,16 +861,17 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_example_product_name_on_the_aws_cloud" class="discrete text-center">Example Product Name on the AWS Cloud</h2>
+<h2 id="_amazon_ec2_with_suricata_on_the_aws_cloud" class="discrete text-center">Amazon EC2 with Suricata on the AWS Cloud</h2>
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
-<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-documentation-base/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="QS" width="80" height="80">
+<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-amazon-vpc-traffic-mirroring/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="QS" width="80" height="80">
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>Month of launch or significant update (spelled out) Year</strong><br>
-<em>Toni Jones, AWS Quick Start team</em></p>
+<p><strong>September 2021</strong><br>
+<em>Pratik R. Mankad, AWS Strategic Accounts; Vaibhav Katkade, Amazon EC2 Product Management</em><br>
+<em>Vinod Shukla, AWS Integration &amp; Automation Team</em></p>
 </div>
 <div class="admonitionblock tip text-left">
 <table>
@@ -884,14 +880,14 @@ p.footer-text a{color:#d7d8d8}
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Visit our <a href="https://github.com/aws-quickstart/quickstart-documentation-base" target="_blank" rel="noopener">GitHub repository</a> for source files and to post feedback,
+Visit our <a href="https://github.com/aws-quickstart/quickstart-amazon-vpc-traffic-mirroring" target="_blank" rel="noopener">GitHub repository</a> for source files and to post feedback,
 report bugs, or submit feature ideas for this Quick Start.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph text-left">
-<p>This Quick Start was created by Example Company Name, Ltd. in collaboration with Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that use AWS CloudFormation templates to deploy key technologies on AWS, following AWS best practices.</p>
+<p>This Quick Start was created by Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that use AWS CloudFormation templates to deploy key technologies on AWS, following AWS best practices.</p>
 </div>
 </div>
 </div>
@@ -899,10 +895,15 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This guide provides instructions for deploying the Example Product Name Quick Start reference architecture on the AWS Cloud.</p>
+<p>This Quick Start deployment guide provides instructions for deploying an Amazon Elastic Compute Cloud
+(Amazon EC2) instance with <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a>, an open-source tool for monitoring network traffic with <a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">Amazon VPC Traffic Mirroring</a>.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for users who &lt;target audience and usage scenario&gt;</p>
+<p>This Quick Start is for security, DevSecOps, and network engineers
+who want to monitor Amazon EC2 instance network traffic using Suricata.</p>
+</div>
+<div class="paragraph">
+<p>The Quick Start provides AWS CloudFormation templates for deploying Suricata on a single Amazon Linux 2 EC2 instance for limited scale deployments or behind a Network Load Balancer in an Auto Scaling group for highly available larger deployments.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -911,7 +912,8 @@ report bugs, or submit feature ideas for this Quick Start.
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Amazon may share user-deployment information with the AWS Partner that collaborated with AWS on the Quick Start.
+This Quick Start does not configure VPC Traffic Mirroring. For information about configuring Traffic Mirroring to monitor your network traffic, see the
+<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" target="_blank" rel="noopener">Traffic Mirroring getting start guide</a>.
 </td>
 </tr>
 </table>
@@ -919,10 +921,17 @@ Amazon may share user-deployment information with the AWS Partner that collabora
 </div>
 </div>
 <div class="sect1">
-<h2 id="_example_product_name_on_aws">Example Product Name on AWS</h2>
+<h2 id="_amazon_ec2_with_suricata_on_aws">Amazon EC2 with Suricata on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>&lt;Describe how the software works on AWS.&gt;</p>
+<p><a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> is an open-source network intrusion detection system (IDS), intrusion prevention system (IPS), and network security monitoring (NSM) engine. Suricata supports Virtual Extensible LAN (VXLAN) for packet decapsulation. You can install Suricata on an EC2 instance to monitor VPC traffic using Traffic Mirroring, a feature of Amazon VPC.</p>
+</div>
+<div class="paragraph">
+<p>Using Traffic Mirroring, you can copy network traffic from an elastic network interface of Amazon EC2 instances and then send the traffic to out-of-band security and monitoring appliances. Traffic Mirroring is used for troubleshooting, content inspection, and threat monitoring.</p>
+</div>
+<div class="paragraph">
+<p>You can deploy Suricata&#8217;s security and monitoring appliances as individual instances, or as a fleet of
+instances behind a Network Load Balancer with a User Datagram Protocol (UDP) listener. Traffic Mirroring supports filters and packet truncation, so you extract only the desired traffic of interest using a monitoring tool such as Suricata.</p>
 </div>
 </div>
 </div>
@@ -957,19 +966,9 @@ After you deploy the Quick Start, create <a href="https://docs.aws.amazon.com/aw
 <h2 id="_software_licenses">Software licenses</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em>&lt;Example 1&gt;No licenses are required to deploy this Quick Start. All AWS service resources consumed during the launch of the Quick Start incur AWS service usage costs.</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;Example 2&gt;Some configurations of the Example Product Name Quick Start involve the use of third-party software. You are responsible for obtaining a license directly from the software vendor.</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;Example 3&gt;This Quick Start requires a license for Example Product Name. To use the Quick Start in your production environment, sign up for a license at &lt;link&gt;. When you launch the Quick Start, place the license key in an S3 bucket and specify its location.</em></p>
-</div>
-<div class="paragraph">
-<p><em>If you don’t have a license, the Quick Start deploys with a trial license. The trial license gives you &lt;n&gt; days of free usage in a non-production environment. After this time, you can upgrade to a production license by following the instructions at &lt;link&gt;.</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;AMI information&gt;The Quick Start requires a subscription to the Amazon Machine Image (AMI) for Example Product Name, which is available from <a href="https://aws.amazon.com/marketplace/" target="_blank" rel="noopener">AWS Marketplace</a>. Additional pricing, terms, and conditions may apply. For instructions, see <a href="#step-2.-subscribe-to-the-software-ami">step 2</a> in the deployment section.</em></p>
+<p>This Quick Start installs <a href="https://suricata.io/" target="_blank" rel="noopener">Suricata</a> on an Amazon Linux 2 EC2 instance.
+The <a href="https://suricata.io/features/open-source/" target="_blank" rel="noopener">Suricata source code</a> is licensed under
+<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html" target="_blank" rel="noopener">version 2 of the GNU General Public License</a>.</p>
 </div>
 </div>
 </div>
@@ -978,14 +977,14 @@ After you deploy the Quick Start, create <a href="https://docs.aws.amazon.com/aw
 <div class="sectionbody">
 <div class="paragraph">
 <p>Deploying this Quick Start for a new virtual private cloud (VPC) with
-default parameters builds the following Example Product Name environment in the
+default parameters builds the following Suricata on Amazon Linux 2 environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
 <div class="content">
-<img src="images/architecture_diagram.png" alt="Architecture">
+<img src="images/vpc-traffic-mirroring-architecture-diagram.png" alt="Architecture" width="715" height="485">
 </div>
-<div class="title">Figure 1. Quick Start architecture for Example Product Name on AWS</div>
+<div class="title">Figure 1. Quick Start architecture for Suricata on Amazon Linux 2 on AWS</div>
 </div>
 <div class="paragraph">
 <p>As shown in <a href="#architecture1">Figure 1</a>, the Quick Start sets up the following:</p>
@@ -993,23 +992,20 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>A highly available architecture that spans two Availability Zones.*</p>
+<p>A highly available architecture that spans multiple Availability Zones.*</p>
 </li>
 <li>
-<p>A VPC configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*</p>
+<p>A VPC configured with public and private subnets according to AWS best practices, to provide you with your own virtual network on AWS.*</p>
 </li>
 <li>
 <p>In the public subnets:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*</p>
+<p>Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*</p>
 </li>
 <li>
-<p>A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to EC2 instances in public and private subnets.*</p>
+<p>A Linux bastion host in an Auto Scaling group to allow inbound Secure Shell (SSH) access to EC2 instances in public and private subnets.*</p>
 </li>
 </ul>
 </div>
@@ -1019,21 +1015,31 @@ Shell (SSH) access to EC2 instances in public and private subnets.*</p>
 <div class="ulist">
 <ul>
 <li>
-<p>&lt;item&gt;.</p>
+<p>EC2 instances in an Auto Scaling group used for deploying across two Availability Zones, offering high availability.</p>
 </li>
 <li>
-<p>&lt;item&gt;.</p>
+<p>A Network Load Balancer to balance traffic between the EC2 instances. For limited scale deployments, you can skip the Network Load Balancer setup and work directly with Suricata deployed on a single Amazon Linux 2 instance by choosing <code>TrafficMirrorTargetType</code> as <code>ENI</code> and <code>NumTargetEC2Instances</code> as <code>1</code>. See <a href="#_parameter_reference">Parameter reference</a> section for details.</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p>&lt;describe any additional components&gt;.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="small">* The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.</span></p>
+<p>*The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+This Quick Start does not configure VPC Traffic Mirroring. For information about configuring Traffic Mirroring to monitor your network traffic, see the
+<a href="https://docs.aws.amazon.com/vpc/latest/mirroring/traffic-mirroring-getting-started.html" target="_blank" rel="noopener">Traffic Mirroring getting start guide</a>.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -1049,7 +1055,32 @@ and <a href="https://aws.amazon.com/training/" target="_blank" rel="noopener">AW
 deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start also assumes familiarity with &lt;knowledge expectations specific to this Quick Start&gt;.</p>
+<p>This Quick Start assumes familiarity with Suricata and the following AWS services and components:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://aws.amazon.com/documentation/vpc/" target="_blank" rel="noopener">Amazon Virtual Private Cloud (Amazon VPC)</a></p>
+</li>
+<li>
+<p><a href="http://aws.amazon.com/documentation/ec2/" target="_blank" rel="noopener">Amazon Elastic Compute Cloud (Amazon EC2)</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html" target="_blank" rel="noopener">Amazon Elastic Block Storage (Amazon EBS)</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/autoscaling/latest/userguide/" target="_blank" rel="noopener">Amazon EC2 Auto Scaling</a></p>
+</li>
+<li>
+<p><a href="http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/" target="_blank" rel="noopener">Amazon CloudWatch Logs</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html" target="_blank" rel="noopener">Amazon VPC Traffic Mirroring</a></p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect2">
@@ -1085,35 +1116,35 @@ deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPCs</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Elastic IP addresses</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Security groups</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">AWS Identity and Access Management (IAM) roles</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Auto Scaling groups</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Application Load Balancers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Network Load Balancers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;type&gt; instances</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">&lt;n&gt;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">c5n.large instances</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">t2.micro instances</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 </tbody>
 </table>
@@ -1155,24 +1186,6 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 </div>
 </div>
 <div class="sect3">
-<h4 id="_prepare_your_aws_account">Prepare your AWS account</h4>
-<div class="paragraph">
-<p><em>Describe any setup required in the AWS account prior to template launch</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_prepare_your_example_company_name_ltd_account">Prepare your Example Company Name, Ltd. account</h4>
-<div class="paragraph">
-<p><em>Describe any setup required in the partner portal/account prior to template launch</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_prepare_for_the_deployment">Prepare for the deployment</h4>
-<div class="paragraph">
-<p><em>Describe any preparation required to complete the product build, such as obtaining licenses or placing files in S3</em></p>
-</div>
-</div>
-<div class="sect3">
 <h4 id="_deployment_options">Deployment options</h4>
 <div class="paragraph">
 <p>This Quick Start provides two deployment options:</p>
@@ -1180,15 +1193,15 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Deploy Example Product Name into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Example Product Name into this new VPC.</p>
+<p><strong>Deploy Suricata on Amazon Linux 2 into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Suricata on Amazon Linux 2 into this new VPC.</p>
 </li>
 <li>
-<p><strong>Deploy Example Product Name into an existing VPC</strong>. This option provisions Example Product Name in your existing AWS infrastructure.</p>
+<p><strong>Deploy Suricata on Amazon Linux 2 into an existing VPC</strong>. This option provisions Suricata on Amazon Linux 2 in your existing AWS infrastructure.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and Example Product Name settings, as discussed later in this guide.</p>
+<p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, Traffic Mirroring target type, instance types, and Suricata on Amazon Linux 2 settings, as discussed later in this guide.</p>
 </div>
 </div>
 </div>
@@ -1219,13 +1232,13 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-If you’re deploying Example Product Name into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables to allow the instances to download packages and software without exposing them to the internet. Also make sure that the domain name option in the DHCP options is configured as explained in <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">DHCP options sets</a>. You provide your VPC settings when you launch the Quick Start.
+If you’re deploying Suricata on Amazon Linux 2 into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables to allow the instances to download packages and software without exposing them to the internet. Also make sure that the domain name option in the DHCP options is configured as explained in <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">DHCP options sets</a>. You provide your VPC settings when you launch the Quick Start.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Each deployment takes about 15 minutes / 60 minutes / 1.5 hours to complete.</p>
+<p>Each deployment takes about 10 minutes to complete.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1233,29 +1246,39 @@ If you’re deploying Example Product Name into an existing VPC, make sure that 
 <p>Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see <a href="#_deployment_options">Deployment options</a> earlier in this guide.</p>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 75%;">
-<col style="width: 25%;">
+<col style="width: 50%;">
+<col style="width: 50%;">
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Example Product Name into a new VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/pnkPy?" target="_blank" rel="noopener">Deploy Suricata on Amazon Linux 2 into a new VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/vERaD?" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Example Product Name into an existing VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/KkyGv?" target="_blank" rel="noopener">Deploy Suricata on Amazon Linux 2 into an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/Dm4wy?" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 </tbody>
 </table>
 </li>
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where you build the network infrastructure. The template is launched in the us-east-1 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a> earlier in this guide.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change
+it if necessary. This Region is where you build the network infrastructure. The template is launched
+in the us-west-2 Region by default. For other choices, see <a href="#_supported_regions">Supported Regions</a>
+earlier in this guide.</p>
 </li>
+</ol>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
 <li>
 <p>On the <strong>Create stack</strong> page, keep the default setting for the template URL, and then choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. For details on each parameter, see the <a href="#_parameter_reference">Parameter reference</a> section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
+<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template.
+Provide values for the parameters that require input. For all other parameters, review the default settings and
+customize them as necessary. For details on each parameter, see the <a href="#_parameter_reference">Parameter reference</a>
+section of this guide. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
 </li>
 <li>
 <p>On the <strong>Configure stack options</strong> page, you can <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html" target="_blank" rel="noopener">specify tags</a> (key-value pairs) for resources in your stack and <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html" target="_blank" rel="noopener">set advanced options</a>. When you finish, choose <strong>Next</strong>.</p>
@@ -1267,7 +1290,7 @@ If you’re deploying Example Product Name into an existing VPC, make sure that 
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Example Product Name deployment is ready.</p>
+<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Suricata on Amazon Linux 2 deployment is ready.</p>
 </li>
 <li>
 <p>To view the created resources, see the values displayed in the <strong>Outputs</strong> tab for the stack.</p>
@@ -1280,36 +1303,70 @@ If you’re deploying Example Product Name into an existing VPC, make sure that 
 <div class="sect1">
 <h2 id="_test_the_deployment">Test the deployment</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Perform the following steps to verify that Suricata is installed and running on the target instances.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make a note of the <strong>TargetInstanceASG</strong> value shown in the <strong>Outputs</strong> tab.</p>
+</li>
+<li>
+<p>Using either AWS CLI or the AWS Management Console, identify the IDs of the instances in the Auto Scaling group. For example, you can use the following CLI command to fetch the instance IDs.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${YOUR_ASG_NAME} --region ${DEPLOY_REGION} | grep -i instanceid | awk '{print $2}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>"i-0c28001ae82907b0a",
+"i-0c425ea76fe462214",</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Using either AWS CLI or the AWS Management Console, connect to any of the instances in the output of the previous command and verify that Suricata is installed.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>aws ssm start-session --target ${INSTANCE_ID} --region ${DEPLOY_REGION}
+# In the started session
+sudo su ec2-user
+# Verify Suricata version
+suricata build-info | head -1
+# Verify Suricata service status
+systemctl status suricata</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sample output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>% aws ssm start-session --target ${INSTANCE_ID} --region ${DEPLOY_REGION}
+Starting session with SessionId: xxxx-yyyy-12345678abcd8888a
+sh-4.2$ sudo su ec2-user
+[ec2-user@ip-10-0-17-42 bin]$ suricata build-info | head -1
+Suricata 6.0.3
+[ec2-user@ip-10-0-17-42 bin]$ systemctl status suricata
+● suricata.service - Suricata Intrusion Detection Service
+   Loaded: loaded (/usr/lib/systemd/system/suricata.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2021-07-22 05:17:33 UTC; 24h ago
+     Docs: man:suricata(1)
+ Main PID: 6879 (Suricata-Main)
+   CGroup: /system.slice/suricata.service
+           └─6879 /sbin/suricata -c /etc/suricata/suricata.yaml --pidfile /var/run/suricata.pid -i eth0 --user suricata
 
+Jul 22 05:17:33 ip-10-0-17-42.us-west-2.compute.internal systemd[1]: Starting Suricata Intrusion Detection Service...
+Jul 22 05:17:33 ip-10-0-17-42.us-west-2.compute.internal systemd[1]: Started Suricata Intrusion Detection Service.
+...output truncated...</code></pre>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_post_deployment_steps">Post-deployment steps</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_best_practices_for_using_example_product_name_on_aws">Best practices for using Example Product Name on AWS</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><em>Add any best practices for using the software.</em></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_security">Security</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><em>Add any security-related information.</em></p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_other_useful_information">Other useful information</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><em>Add any other details that will help the customer use the software on AWS.</em></p>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -1343,13 +1400,13 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <div class="paragraph">
 <p><strong>A.</strong> Launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template-size limitations. For more information, see <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS CloudFormation quotas</a>.</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_troubleshooting">Troubleshooting</h2>
-<div class="sectionbody">
 <div class="paragraph">
-<p>&lt;Steps for troubleshooting the deployment.&gt;</p>
+<p><strong>Q.</strong> I am using the Network Load Balancer as the VPC Traffic Mirroring target, but I don&#8217;t see mirrored traffic.</p>
+</div>
+<div class="paragraph">
+<p><strong>A.</strong> By default, each load balancer node distributes traffic across the registered targets in its
+Availability Zone only. Verify that the EC2 instances running Suricata are instantiated in both the Availability Zones.
+You can also research how to enable <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones" target="_blank" rel="noopener">cross-zone load balancing</a>.</p>
 </div>
 </div>
 </div>
@@ -1377,7 +1434,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </table>
 </div>
 <div class="sect2">
-<h3 id="_parameters_for_deploying_into_an_new_vpc">Parameters for deploying into an new VPC</h3>
+<h3 id="_parameters_for_deploying_into_a_new_vpc">Parameters for deploying into a new VPC</h3>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Network configuration</caption>
 <colgroup>
@@ -1468,7 +1525,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bastion AMI operating system
 (<code>BastionAMIOS</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Amazon-Linux2-HVM</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The Linux distribution for the AMI to be used for the bastion instances.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Linux distribution for the AMI used for the bastion instances.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Bastion instance type
@@ -1500,7 +1557,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of bastion hosts to create. The maximum number is four.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bastion host name
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bastion hostname
 (<code>BastionHostName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>LinuxBastion</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The value used for the name tag of the bastion host.</p></td>
@@ -1556,7 +1613,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Traffic mirror target type
 (<code>TrafficMirrorTargetType</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>NLB</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose NLB to deploy a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, choose ENI and set NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Number of target EC2 instances
@@ -1574,7 +1631,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Target EC2 instance disk size
 (<code>TargetEC2InstanceRootVolumeSize</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>8</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Target instance disk size in GB. Default is set to 8GB.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Target instance disk size in GB. Default is set to 8 GB.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1635,7 +1692,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPC ID
 (<code>VPCID</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the VPC (e.g., vpc-0343606e).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the VPC (for example, vpc-0343606e).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPC CIDR block
@@ -1647,13 +1704,13 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Subnet 1 ID
 (<code>Subnet1ID</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of Subnet 1 to be associated (e.g., subnet-11223344, subnet-55667788).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of Subnet 1 to be associated (for example, subnet-11223344, subnet-55667788).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Subnet 2 ID
 (<code>Subnet2ID</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of Subnet 2 to be associated (e.g., subnet-11223344, subnet-55667788).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of Subnet 2 to be associated (for example, subnet-11223344, subnet-55667788).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The number of target instances to create. The maximum number is four.
@@ -1671,7 +1728,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Target EC2 instance size in GB
 (<code>TargetEC2InstanceRootVolumeSize</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>8</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Target instance disk size in GB. Default is set to 8GB.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Target instance disk size in GB. Default is set to 8 GB.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Key pair required for accessing target EC2 instance
@@ -1689,7 +1746,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <td class="tableblock halign-left valign-top"><p class="tableblock">Traffic mirror target type
 (<code>TrafficMirrorTargetType</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>NLB</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose NLB to deploy a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, choose ENI and set NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Amazon Linux 2 AMI ID
@@ -1706,7 +1763,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <h2 id="_send_us_feedback">Send us feedback</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To post feedback, submit feature ideas, or report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-quickstart/quickstart-documentation-base" target="_blank" rel="noopener">GitHub repository</a> for this Quick Start. To submit code, see the <a href="https://aws-quickstart.github.io/" target="_blank" rel="noopener">Quick Start Contributor’s Guide</a>.</p>
+<p>To post feedback, submit feature ideas, or report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-quickstart/quickstart-amazon-vpc-traffic-mirroring" target="_blank" rel="noopener">GitHub repository</a> for this Quick Start. To submit code, see the <a href="https://aws-quickstart.github.io/" target="_blank" rel="noopener">Quick Start Contributor’s Guide</a>.</p>
 </div>
 </div>
 </div>
@@ -1722,7 +1779,7 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 <h2 id="_github_repository">GitHub repository</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Visit our <a href="https://github.com/aws-quickstart/quickstart-documentation-base" target="_blank" rel="noopener">GitHub repository</a> to download
+<p>Visit our <a href="https://github.com/aws-quickstart/quickstart-amazon-vpc-traffic-mirroring" target="_blank" rel="noopener">GitHub repository</a> to download
 the templates and scripts for this Quick Start, to post your comments,
 and to share your customizations with others.</p>
 </div>
@@ -1744,13 +1801,14 @@ and to share your customizations with others.</p>
 <p class="footer-text">
 <!-- We can use document attributes: -->
 <!-- Generated with Asciidoctor v2.0.15. -->
-<a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> | &copy; 2021, Amazon Web Services, Inc. or its affiliates and Example Company Name, Ltd.. All rights reserved.
+<a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> | &copy; 2021, Amazon Web Services, Inc. or its affiliates. All rights reserved.
 </p>
 </body>
 </html>
 <!--
 repo commit:
-87d42c666ace7b7703611b084123d4bf57285e66
+b797022dbaa06f5312975b4ab0cf714d3e19497d
+edits
 
 submodule config:
  4ee94d6b60ec455e5b452e8ad9841eb825704b70 docs/boilerplate (heads/main)

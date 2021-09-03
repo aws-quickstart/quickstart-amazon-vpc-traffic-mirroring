@@ -17,14 +17,14 @@
 |===
 |Parameter label (name) |Default value|Description|Key pair name
 (`KeyPairName`)|`**__Requires input__**`|Name of an existing public/private key pair, which allows you to securely connect to your instance after it launches.|Bastion AMI operating system
-(`BastionAMIOS`)|`Amazon-Linux2-HVM`|The Linux distribution for the AMI to be used for the bastion instances.|Bastion instance type
+(`BastionAMIOS`)|`Amazon-Linux2-HVM`|The Linux distribution for the AMI used for the bastion instances.|Bastion instance type
 (`BastionInstanceType`)|`t2.micro`|Amazon EC2 instance type for the bastion instances.
 |===
 .Linux bastion configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Number of bastion hosts
-(`NumBastionHosts`)|`1`|The number of bastion hosts to create. The maximum number is four.|Bastion host name
+(`NumBastionHosts`)|`1`|The number of bastion hosts to create. The maximum number is four.|Bastion hostname
 (`BastionHostName`)|`LinuxBastion`|The value used for the name tag of the bastion host.|Bastion tenancy
 (`BastionTenancy`)|`default`|Bastion VPC tenancy (dedicated or default).|Bastion banner
 (`EnableBanner`)|`false`|Choose *true* to display a banner when connecting via SSH to the bastion.|Banner text
@@ -36,10 +36,10 @@
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Traffic mirror target type
-(`TrafficMirrorTargetType`)|`NLB`|When you choose TrafficMirrorTargetType as NLB, the template deploys a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, you can also specify TrafficMirrorTargetType as ENI and NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.|Number of target EC2 instances
+(`TrafficMirrorTargetType`)|`NLB`|Choose NLB to deploy a Network Load Balancer and a target group with Suricata instances. For limited scale deployments, choose ENI and set NumTargetEC2Instances as 1. This deploys Suricata on a single EC2 instance as your Traffic Mirroring target.|Number of target EC2 instances
 (`NumTargetEC2Instances`)|`2`|The number of targets to create. The maximum number is four.|Target EC2 instance type
 (`TargetEC2InstanceType`)|`c5n.large`|Amazon EC2 instance type for the target instances associated with NLB.|Target EC2 instance disk size
-(`TargetEC2InstanceRootVolumeSize`)|`8`|Target instance disk size in GB. Default is set to 8GB.
+(`TargetEC2InstanceRootVolumeSize`)|`8`|Target instance disk size in GB. Default is set to 8 GB.
 |===
 .AWS Quick Start configuration
 [width="100%",cols="16%,11%,73%",options="header",]

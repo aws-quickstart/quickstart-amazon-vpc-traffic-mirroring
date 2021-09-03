@@ -1,5 +1,5 @@
 
-=== Parameters for deploying into an new VPC
+=== Parameters for deploying into a new VPC
 include::vpc-traffic-mirroring-primary.template.adoc[]
 
 === Parameters for deploying into an existing VPC
