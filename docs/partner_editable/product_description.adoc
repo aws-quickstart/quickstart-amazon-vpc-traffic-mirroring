@@ -2,7 +2,7 @@
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-https://suricata.io/[Suricata^] is an open-source network intrusion detection system (IDS), intrusion prevention system (IPS), and network security monitoring (NSM) engine. Suricata supports Virtual Extensible LAN (VXLAN) for packet decapulation. You can install Suricata on an EC2 instance to monitor VPC traffic using Traffic Mirroring, a feature of Amazon VPC.
+https://suricata.io/[Suricata^] is an open-source network intrusion detection system (IDS), intrusion prevention system (IPS), and network security monitoring (NSM) engine. Suricata supports Virtual Extensible LAN (VXLAN) for packet decapsulation. You can install Suricata on an EC2 instance to monitor VPC traffic using Traffic Mirroring, a feature of Amazon VPC.
 
 Using Traffic Mirroring, you can copy network traffic from an elastic network interface of Amazon EC2 instances and then send the traffic to out-of-band security and monitoring appliances. Traffic Mirroring is used for troubleshooting, content inspection, and threat monitoring. 
 

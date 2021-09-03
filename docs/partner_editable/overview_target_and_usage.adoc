@@ -3,7 +3,7 @@
 //Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
 
 This Quick Start deployment guide provides instructions for deploying an Amazon Elastic Compute Cloud 
-(Amazon EC2) instance with https://suricata.io/[Suricata^], an open-source tool that you can use to monitor network traffic with https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html[Amazon VPC Traffic Mirroring^]. 
+(Amazon EC2) instance with https://suricata.io/[Suricata^], an open-source tool for monitoring network traffic with https://docs.aws.amazon.com/vpc/latest/mirroring/what-is-traffic-mirroring.html[Amazon VPC Traffic Mirroring^]. 
 
 This Quick Start is for security, DevSecOps, and network engineers 
 who want to monitor Amazon EC2 instance network traffic using Suricata.
