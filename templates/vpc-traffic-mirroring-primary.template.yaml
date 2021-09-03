@@ -7,7 +7,7 @@ Description: >-
 
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Parameters for deploying into an new VPC"
+    EntrypointName: "Parameters for deploying into a new VPC"
     Order: 1
   LICENSE: Apache License, Version 2.0
   LintSpellExclude:
@@ -77,7 +77,7 @@ Metadata:
       BastionAMIOS:
         default: Bastion AMI operating system
       BastionHostName:
-        default: Bastion host name
+        default: Bastion hostname
       BastionTenancy:
         default: Bastion tenancy
       BastionBanner:
