@@ -1,0 +1,17 @@
+:partner-solution-project-name: quickstart-amazon-vpc-traffic-mirroring
+:partner-solution-github-org: aws-quickstart
+:partner-product-name: Amazon EC2 with Suricata
+:partner-product-short-name: Suricata on Amazon Linux 2
+//:partner-company-name: Example Company Name, Ltd.
+:doc-month: September
+:doc-year: 2021
+//:partner-contributors: John Smith, {partner-company-name}
+// :other-contributors: Akua Mansa, Trek10
+:aws-contributors: Pratik R. Mankad, AWS Strategic Accounts; Vaibhav Katkade, Amazon EC2 Product Management
+:aws-ia-contributors: Vinod Shukla, AWS Integration & Automation Team
+:deployment_time: 10 minutes
+:default_deployment_region: us-west-2
+// :private_repo:
+
+
+// For instructions on creating this deployment guide, refer to "Build your AWS Partner Solution documentation" (https://aws-ia-us-west-2.s3.us-west-2.amazonaws.com/docs/content/index.html#/).

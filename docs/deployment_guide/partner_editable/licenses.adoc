@@ -1,0 +1,7 @@
+// Include details about any licenses and how to sign up. Provide links as appropriate.
+
+This Partner Solution installs https://suricata.io/[Suricata^] on an Amazon Linux 2 EC2 instance.
+The https://suricata.io/features/open-source/[Suricata source code^] is licensed under
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.html[version 2 of the GNU General Public License^].
+
+There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
