@@ -1,5 +1,0 @@
-// Include details about any licenses and how to sign up. Provide links as appropriate. If no licenses are required, clarify that. The following paragraphs provide examples of details you can provide. Remove italics, and rephrase as appropriate.
-
-This Quick Start installs https://suricata.io/[Suricata^] on an Amazon Linux 2 EC2 instance.
-The https://suricata.io/features/open-source/[Suricata source code^] is licensed under 
-https://www.gnu.org/licenses/old-licenses/gpl-2.0.html[version 2 of the GNU General Public License^].
